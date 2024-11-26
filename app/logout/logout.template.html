@@ -1,0 +1,9 @@
+<div id="logoutBar" class="col-xs-2">
+    <p id="loggedIn" ng-bind-html="$ctrl.user"></p>
+    <button id="cambioPwd" class="btn btn-info logout-btn" ng-click="$ctrl.pwdDialog($event)">
+        Modifica Password <span class="glyphicon glyphicon-wrench"></span>
+    </button>
+    <button id="logout" class="btn btn-info logout-btn" ng-click="$ctrl.logout()">
+        Sign Out <span class="glyphicon glyphicon-log-out"></span>
+    </button>
+</div>

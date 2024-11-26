@@ -1,0 +1,38 @@
+<md-dialog class="md-dialog-big">
+    <form name="mansioneForm" ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Informazioni Personali</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+
+            <!-- <div class="md-dialog-content">
+                <div class="form-group">
+                    <label>Mansione:</label>
+                    <input type="text" id="modMansione" class="form-control" ng-model="man">
+                </div>
+            </div> -->
+            <md-content layout-padding>
+                <md-input-container class="md-block">
+                    <label>Mansione</label>
+                    <input type="text" name="mansione" ng-model="man" md-no-asterisk>
+                </md-input-container>
+            </md-content>
+
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <button ng-click="answer()" aria-label="confirm" class="btn btn-success">
+                <span class="glyphicon glyphicon-ok"></span>
+            </button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

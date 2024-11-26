@@ -1,0 +1,28 @@
+<div id="login-template">
+    <div class="col-xs-4 col-xs-offset-2">
+        <img id="logo-login" src="app/img/logo.jpg ">
+        <p id="titleLogin">Accesso all'interfaccia web per la creazione di curricula aziendali</p>
+    </div>
+    <div class="col-xs-6">
+        <form>
+            <div id="div-login">
+                <div id="header-form">
+                    <label>Sign in</label>
+                </div>
+                <div id="body-form">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" ng-model="$ctrl.username" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd">Password:</label>
+                        <input type="password" ng-model="$ctrl.password" class="form-control">
+                    </div>
+                </div>
+                <div id="footer-form">
+                    <button id="signin_btn" ng-click="$ctrl.signin()" class="btn btn-success pull-right" type="submit">Sign in</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

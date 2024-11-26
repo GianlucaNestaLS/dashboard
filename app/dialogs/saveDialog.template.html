@@ -1,0 +1,39 @@
+<md-dialog>
+    <form ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools" id="dialog-toolbar">
+                <h2>Vuoi salvare le modifiche prima di uscire?</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+
+                <p>
+                Sono presenti modifiche non salvate.
+                </p>
+
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <button ng-click="answer('annulla')" class="btn btn-big btn-primary">
+                Annulla
+            </button>
+            <span flex></span>
+            <button ng-click="answer('non salvare')" class="btn btn-big btn-danger">
+                Non salvare
+            </button>
+            <span flex></span>
+            <button ng-click="answer('salva')" class="btn btn-big btn-success">
+                Salva
+            </button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

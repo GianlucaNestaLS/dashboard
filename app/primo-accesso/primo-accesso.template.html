@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="row">
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h1>Primo accesso</h1>
+        </div>
+    </div>
+
+    <div class="col-xs-8 col-xs-offset-2">
+        <p>Prima di procedere, è necessario modificare la password e fornire il consenso al trattamento dei dati personali.</p>
+        <form name="formPrivacy" id="formPrivacy">
+            <md-input-container class="md-block">
+                <label for="password">Nuova password</label>
+                <input type="password" name="password" class="form-control" ng-model="$ctrl.password" ng-change="$ctrl.comparePassword()" required md-no-asterisk>
+                <div ng-messages="formPrivacy.password.$error" role="alert">
+                    <div ng-message="required">Nuova password obbligatoria.</div>
+                    <div ng-message="comparePassword">Le password devono essere uguali.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label for="confirmPassword">Conferma password</label>
+                <input type="password" name="confirmPassword" class="form-control" ng-model="$ctrl.confirmPassword" ng-change="$ctrl.comparePassword()" required md-no-asterisk>
+                <div ng-messages="formPrivacy.confirmPassword.$error" role="alert">
+                    <div ng-message="required">Conferma password obbligatoria.</div>
+                    <div ng-message="comparePassword">Le password devono essere uguali.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <md-checkbox class="md-primary" ng-model="$ctrl.privacy" required>
+                    Autorizzo il trattamento dei dati personali contenuti nel mio curriculum vitae in base all’art. 13 del D. Lgs. 196/2003 e all’art. 13 GDPR 679/16.
+                </md-checkbox>
+            </md-input-container>
+            <button ng-click="$ctrl.salva()" class="btn btn-success btn-big" type="submit" ng-disabled="formPrivacy.$invalid">Salva</button>
+            <button ng-click="$ctrl.logout()" class="btn btn-danger btn-big">Esci</button>
+        </form>
+    </div>
+
+</div>

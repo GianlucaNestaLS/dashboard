@@ -1,0 +1,55 @@
+<md-dialog class="md-dialog-big">
+        <form name="tagForm" ng-cloak>
+
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Nuova Tag</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="cancel()">
+                        <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+
+            <md-dialog-content>
+                <!-- <div class="md-dialog-content">
+
+                    <div class="form-group">
+                        <label>Tag:</label>
+                        <input type="text" class="form-control" ng-model="tag" ng-class="{'err': check}" ng-change="checkTag()">
+                    </div>
+
+                </div> -->
+
+                <md-content layout-padding>
+
+                    <md-input-container class="md-block">
+                        <label>Tag (max 20 caratteri)</label>
+                        <!--input type="text" name="tag" ng-model="tag" ng-change="checkTag()" required md-no-asterisk/-->
+                        <md-autocomplete md-input-name="tag" ng-model="tag" md-selected-item-change="checkTag()" md-search-text-change="checkTag()" md-selected-item="tag" md-search-text="searchText" md-items="tag in querySearch(searchText)" md-min-length="0" md-input-maxlength="20" placeholder="Inserisci Tag" onkeydown="return event.keyCode != 188">
+                            <md-item-template>
+                                <span md-highlight-text="searchText" md-highlight-flags="^i">{{tag}}</span>
+                            </md-item-template>
+                        </md-autocomplete>
+                        <div ng-messages="tagForm.tag.$error" role="alert">
+                            <div ng-message="empty">Tag obbligatoria.</div>
+                            <div ng-message="check">Tag già inserita.</div>
+                        </div>
+                    </md-input-container>
+
+                </md-content>
+
+            </md-dialog-content>
+
+            <md-dialog-actions layout="row">
+                <button ng-click="answer()" aria-label="confirm" class="btn btn-success" ng-disabled="tagForm.$invalid">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <!-- <div ng-if="show" class="alert alert-danger fade in floatAlertMod">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <strong>Failed!</strong> Tag gi&agrave; presente.
+                </div> -->
+            </md-dialog-actions>
+
+        </form>
+    </md-dialog>

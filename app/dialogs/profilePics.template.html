@@ -1,0 +1,42 @@
+<md-dialog aria-label="Immagini Profilo">
+    <form ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools" id="dialog-toolbar">
+                <h2>Immagini Profilo</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content" ng-cloak>
+
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-info" id="caricaFoto">
+                        <label for="file">
+                            <span class="glyphicon glyphicon-import"></span>Carica foto
+                        </label>
+                        <input type="file" id="file" files-input ng-model="file" ng-change="caricaFoto(file)" accept="image/*">
+                    </button>
+                </div>
+                <div class="col-xs-12 spazio"></div>
+
+                <div class="col-xs-12 spazioFoto">
+                    <div class="thumbnail" ng-repeat="pic in profilePics">
+                        <a class="profilePic" ng-click="answer(pic.path)">
+                            <img ng-src="{{pic.path}}">
+                            <div class="caption">
+                                <p ng-bind="pic.caption"></p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </md-dialog-content>
+
+    </form>
+</md-dialog>

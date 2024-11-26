@@ -1,0 +1,98 @@
+<div class="container">
+    <div class="row">
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h1>Tabella Impiegati</h1>
+        </div>
+    </div>
+
+    <div class="row" id="filtriImp">
+        <div class="col-xs-2 col-xs-offset-2" ng-if="$ctrl.profilo == 'ADMINISTRATOR'">
+            <select class="form-control" ng-model="search.societa">
+                <option value="">Tutte le Società</option>
+                <option ng-repeat="soc in $ctrl.listaSoc" value="{{soc.nome}}">{{soc.nome}}</option>
+            </select>
+        </div>
+        <div class="col-xs-2" ng-class="{'col-xs-offset-2': $ctrl.profilo == 'ALL_USERS'}">
+            <select class="form-control" ng-model="search.dipendente">
+                <option value="">Tutti gli Impiegati</option>
+                <option value="1">Dipendenti</option>
+                <option value="0">Non Dipendenti</option>
+            </select>
+        </div>
+        <div ng-class="$ctrl.profilo == 'ADMINISTRATOR' ? 'col-xs-4' : 'col-xs-6'" id="filtraContainer">
+            <span class="glyphicon glyphicon-search searchIcon"></span>
+            <input type="search" id="filtra" placeholder="Filtra Impiegati" ng-model="search.nominativo">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-8 col-xs-offset-2">
+            <md-radio-group class="md-primary" layout="row" layout-align="left center" ng-model="search.cv_compilato">
+                <label>CV compilato:</label>
+                <md-radio-button value="">Tutti</md-radio-button>
+                <md-radio-button value="SI">Sì</md-radio-button>
+                <md-radio-button value="NO">No</md-radio-button>
+            </md-radio-group>
+        </div>
+    </div>
+
+    <div class="col-xs-8 col-xs-offset-2">
+        <p>Totale Impiegati: {{totalItems}} su {{$ctrl.impiegati.length}}</p>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Società</th>
+                    <th>Cognome</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <!--th>Telefono</th-->
+                    <th>CV compilato</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tableImpiegati">
+                <tr ng-repeat="imp in filtered = ($ctrl.impiegati | filter:filtroImp(search)) | startFrom:(currentPage - 1) * entryLimit | limitTo:entryLimit" ng-click="$ctrl.open(imp.userid)">
+                    <td ng-bind="imp.dipendente == 1 ? imp.societa : ''"></td>
+                    <td ng-bind="imp.cognome"></td>
+                    <td ng-bind="imp.nome"></td>
+                    <td ng-bind="imp.dipendente == 1 ? imp.username : imp.email_pers"></td>
+                    <!--td ng-bind="imp.telefono"></td-->
+                    <td class="tbl-icon-cv">
+                        <span class="glyphicon" ng-class="imp.cv_compilato == 'SI' ? 'glyphicon-ok text-success' : 'glyphicon-remove no-cv-icon text-danger'"></span>
+                    </td>
+                    <td class="tbl-icon">
+                        <button type="button" name="modificaImpiegato" ng-click="$ctrl.impDialog($event, imp.userid); $event.stopPropagation();" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                    </td>
+                    <td class="tbl-icon">
+                        <button type="button" ng-click="$ctrl.deleteDialog($event, imp.userid); $event.stopPropagation();" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                    <td class="tbl-icon">
+                        <input type="checkbox" ng-model="imp.check" ng-click="$event.stopPropagation();" class="export">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <pagination page="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" previous-text="Prec" next-text="Succ"></pagination>
+
+        <div id="btnGroup">
+            <button type="button" ng-click="$ctrl.impDialog($event)" class="btn btn-primary pull-right" id="aggiungiImpiegato">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+            <button type="button" ng-click="$ctrl.export()" class="btn btn-info pull-right" id="esporta">
+                <span class="glyphicon glyphicon-export"></span>Esporta
+            </button>
+            <button type="button" class="btn btn-info pull-right" id="importa">
+                <label for="file">
+                    <span class="glyphicon glyphicon-import"></span>Importa
+                </label>
+                <input type="file" id="file" files-input ng-model="file" ng-change="$ctrl.import(file)" accept="application/json">
+            </button>
+        </div>
+    </div>
+
+</div>

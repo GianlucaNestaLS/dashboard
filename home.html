@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html ng-app="homeApp">
+
+
+<head>
+    <title ng-bind-html="$root.title"></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="app/css/minify.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/toast/jquery.toast.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/angular-material/angular-material.css"> -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.5/angular-material.min.css">
+    <link rel="icon" href="./app/img/cropped-Logo-linear-system_0-32x32.png">
+</head>
+
+
+<body>
+
+    <div class="row" ui-view></div>
+
+    <!-- JS -->
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-route.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-animate.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-aria.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-messages.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@uirouter/angularjs/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-scroll/1.0.2/angular-scroll.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.5/angular-material.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- <script type="text/javascript" src="/toast/jquery.toast.min.js"></script> -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
+    <!-- <script type="text/javascript" src="/angular-material/angular-material.js"></script> -->
+    <!-- <script type="text/javascript" src="/angular-md5/angular-md5.js"></script> -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-md5/0.1.10/angular-md5.min.js"></script>
+    <script type="text/javascript" src="app/js/serviceConfig.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.27/stateEvents.js"></script>
+
+    <script type="text/javascript" src="app/core/app.module.js"></script>
+    <script type="text/javascript" src="app/core/app.config.js"></script>
+    <script type="text/javascript" src="app/core/token.module.js"></script>
+    <script type="text/javascript" src="app/core/token.service.js"></script>
+    <script type="text/javascript" src="app/core/title.module.js"></script>
+    <script type="text/javascript" src="app/core/title.service.js"></script>
+    <script type="text/javascript" src="app/core/dataImp.module.js"></script>
+    <script type="text/javascript" src="app/core/dataImp.service.js"></script>
+
+    <script type="text/javascript" src="app/login/login.module.js"></script>
+    <script type="text/javascript" src="app/login/login.component.js"></script>
+    <script type="text/javascript" src="app/table-impiegati/table-impiegati.module.js"></script>
+    <script type="text/javascript" src="app/table-impiegati/table-impiegati.component.js"></script>
+    <script type="text/javascript" src="app/ricerca-tag/ricerca-tag.module.js"></script>
+    <script type="text/javascript" src="app/ricerca-tag/ricerca-tag.component.js"></script>
+    <script type="text/javascript" src="app/stats/stats.module.js"></script>
+    <script type="text/javascript" src="app/stats/stats.component.js"></script>
+    <script type="text/javascript" src="app/sidebar-home/sidebar-home.module.js"></script>
+    <script type="text/javascript" src="app/sidebar-home/sidebar-home.component.js"></script>
+    <script type="text/javascript" src="app/impiegato/impiegato.module.js"></script>
+    <script type="text/javascript" src="app/impiegato/impiegato.component.js"></script>
+    <script type="text/javascript" src="app/logout/logout.module.js"></script>
+    <script type="text/javascript" src="app/logout/logout.component.js"></script>
+    <script type="text/javascript" src="app/sidebar-impiegato/sidebar-impiegato.module.js"></script>
+    <script type="text/javascript" src="app/sidebar-impiegato/sidebar-impiegato.component.js"></script>
+    <script type="text/javascript" src="app/preview/preview.module.js"></script>
+    <script type="text/javascript" src="app/preview/preview.component.js"></script>
+    <script type="text/javascript" src="app/societa/societa.module.js"></script>
+    <script type="text/javascript" src="app/societa/societa.component.js"></script>
+    <script type="text/javascript" src="app/primo-accesso/primo-accesso.module.js"></script>
+    <script type="text/javascript" src="app/primo-accesso/primo-accesso.component.js"></script>
+
+
+</body>
+
+
+</html>

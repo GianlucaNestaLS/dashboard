@@ -1,0 +1,77 @@
+<md-dialog class="md-dialog-big">
+    <form name="socForm" ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 ng-bind="titolo"></h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+
+            <md-content layout-padding>
+
+                <md-input-container class="md-block">
+                    <label>Nome</label>
+                    <input type="text" name="nome" ng-model="nome" required md-no-asterisk>
+                    <div ng-messages="socForm.nome.$error" role="alert">
+                        <div ng-message="required">Nome richiesto.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Dominio</label>
+                    <input type="text" name="dominio" ng-model="dominio" required md-no-asterisk pattern="^([a-z.-]+)\.([a-z.]{2,6})$">
+                    <div ng-messages="socForm.dominio.$error" role="alert">
+                        <div ng-message="required">Dominio richiesto.</div>
+                        <div ng-message="pattern">Dominio con caratteri non validi.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Logo</label>
+                </md-input-container>
+                <choose-file layout="row">
+                    <button type="button" class="btn btn-info" id="caricaFoto">
+                        <label for="file">
+                            <span class="glyphicon glyphicon-import"></span>Carica logo
+                        </label>
+                        <input type="file" id="file" files-input ng-model="file" ng-change="caricaFoto(file, 'logo')" accept="image/*">
+                    </button>
+                    <md-input-container flex class="md-block file-input">
+                        <input type="text" name="logo" ng-model="logo" aria-label="logo" readonly>
+                    </md-input-container>
+                </choose-file>
+
+                <md-input-container class="md-block">
+                    <label>Carta intestata</label>
+                </md-input-container>
+                <choose-file layout="row">
+                    <button type="button" class="btn btn-info" id="caricaCartaIntestata">
+                        <label for="file2">
+                            <span class="glyphicon glyphicon-import"></span>Carica carta intestata
+                        </label>
+                        <input type="file" id="file2" files-input ng-model="file" ng-change="caricaFoto(file, 'carta')" accept="image/*">
+                    </button>
+                    <md-input-container flex class="md-block file-input">
+                        <input type="text" name="carta" ng-model="carta" aria-label="carta" readonly>
+                    </md-input-container>
+                </choose-file>
+
+            </md-content>
+
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <button ng-click="answer()" aria-label="confirm" class="btn btn-success" ng-disabled="socForm.$invalid">
+                <span class="glyphicon glyphicon-ok" ng-show="modifica == false"></span>
+                <span class="glyphicon glyphicon-pencil" ng-show="modifica == true"></span>
+            </button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

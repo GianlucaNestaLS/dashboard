@@ -1,0 +1,341 @@
+<!--<div id="mySidenav" class="sidenav"  ng-show="$ctrl.showTag">
+    <a href="javascript:void(0)" class="closebtn" ng-click="$ctrl.closeNav()">&times;</a>
+    <h2>
+        <span class="glyphicon glyphicon-tags"></span> Tags
+        <button type="button" class="btn pull-right" id="aggiungiTag" ng-click="$ctrl.addTag()">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    </h2>
+    <div id="tagsContainer">
+        <div ng-repeat="t in $ctrl.tags" class="p_tag">
+            <span class="glyphicon glyphicon-remove" ng-click="$ctrl.deleteTag(t)"></span>
+            <span ng-bind="t.tag"></span>
+        </div>
+    </div>
+</div> -->
+<div layout="column" ng-cloak="" class="sidenavdemoBasicUsage"></div>
+<md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" id="mySidenav">
+    <md-toolbar class="md-theme-light">
+        <h2 id="sidenavTags">
+            <span class="glyphicon glyphicon-tags"></span> Tags
+            <button type="button" class="btn pull-right" id="aggiungiTag" ng-click="$ctrl.tagDialog()">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </h2>
+    </md-toolbar>
+    <md-content>
+        <div id="tagsContainer">
+            <div ng-repeat="t in $ctrl.tags" class="p_tag">
+                <span class="glyphicon glyphicon-remove" ng-click="$ctrl.deleteTag(t)"></span>
+                <span ng-bind="t.tag"></span>
+            </div>
+        </div>
+    </md-content>
+</md-sidenav>
+
+<!-- inizio container1 -->
+<div class="container" id="cont1">
+
+    <!-- Inizio prima riga con info personali -->
+    <div class="row" id="pInfo">
+
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h2>INFORMAZIONI PERSONALI</h2>
+        </div>
+
+        <div id="infoContainer" class="col-xs-8 col-xs-offset-2" ng-cloak>
+            <div class="col-xs-4">
+                <img ng-src="{{$ctrl.foto}}" id="foto" class="img-responsive">
+                <label class="btn btn-primary btn-file">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                    <input type="btn btn-primary" id="inputFoto" ng-click="$ctrl.changeProfilePic($event)">
+                </label>
+            </div>
+            <div class="col-xs-7">
+                <div class="riga">
+                    <div id="nome" ng-bind="$ctrl.pInfo.nome|uppercase" class="iper" check-width></div>
+                    <div id="cognome" ng-bind="$ctrl.pInfo.cognome|uppercase" class="iper" check-width></div>
+                </div>
+                <div class="riga">
+                    <div id="mansione" ng-bind="$ctrl.pInfo.mansione"></div>
+                    <span flex></span>
+                    <div id="btnMansione">
+                        <button type="button" class="btn btn-primary" ng-click="$ctrl.mansioneDialog()">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="riga" id="impiegatoChck" ng-cloak ng-if="$ctrl.profilo != 'USER'" layout="row" layout-align="left center">
+                    <div class="col-xs-1">
+                        <md-switch class="md-primary" aria-label="Switch No Ink" ng-model="$ctrl.pInfo.dipendente"></md-switch>
+                    </div>
+                    <div class="col-xs-11" id="impiegatoChckTxt">Dipendente</div>
+                </div>
+                <div class="riga" ng-if="$ctrl.pInfo.dipendente">
+                    <p class="p-info" ng-bind="$ctrl.pInfo.societa"></p>
+                    <p class="p-info" ng-bind="$ctrl.pInfo.username"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h2>CONTATTI</h2>
+        </div>
+        <div class="col-xs-8 col-xs-offset-2">
+            <div layout="row" layout-align="left center">
+                <div class="col-xs-3">TELEFONO</div>
+                <div class="col-xs-9">
+                    <input type="text" class="form-control" name="telefono" ng-model="$ctrl.pInfo.telefono" maxlength="10" onkeydown="return (event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode == 46 || event.keyCode == 8 || (event.keyCode >= 35 && event.keyCode <= 40)">
+                </div>
+            </div>
+            <div class="col-xs-13 spazio"></div>
+            <div layout="row" layout-align="left center">
+                <div class="col-xs-3">E-MAIL PERSONALE</div>
+                <div class="col-xs-9">
+                    <input type="text" class="form-control" name="email_pers" ng-model="$ctrl.pInfo.email_pers">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="$ctrl.pInfo.dipendente == false && $ctrl.profilo != 'USER'">
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h2>VALUTAZIONE INIZIALE</h2>
+        </div>
+        <div class="col-xs-8 col-xs-offset-2">
+            <div layout="row" layout-align="left center">
+                <div class="col-xs-2">RAL</div>
+                <div class="col-xs-10">
+                    <md-slider-container>
+                        <md-slider min="0" max="100000" step="100" ng-model="$ctrl.pInfo.ral" id="ral-slider" class="md-primary" aria-label="RAL"></md-slider>
+                        <md-input-container>
+                            <input type="number" id="slider-input" min="0" limit-to-max ng-model="$ctrl.pInfo.ral" aria-controls="ral-slider" aria-label="RAL" onkeydown="return (event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode == 46 || event.keyCode == 8 || (event.keyCode >= 35 && event.keyCode <= 40)">
+                        </md-input-container>
+                    </md-slider-container>
+                </div>
+            </div>
+            <div layout="row" layout-align="left center">
+                <div class="col-xs-2" id="valutazione">VALUTAZIONE</div>
+                <div class="col-xs-10" star-rating rating-value="$ctrl.pInfo.valutazione" max="5"></div>
+            </div>
+            <div class="col-xs-12 spazio"></div>
+            <div class="col-xs-2">GIUDIZIO</div>
+            <div class="col-xs-10">
+                <textarea name="giudizio" rows="10" class="form-control" ng-model="$ctrl.pInfo.giudizio"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inizio seconda riga con esperienze lavorative -->
+    <div class="row" id="exp">
+
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h2>ESPERIENZA</h2>
+        </div>
+
+        <div class="col-xs-8 col-xs-offset-2">
+            <button type="button" class="btn btn-primary pull-right" id="aggiungiExp" ng-click="$ctrl.expDialog($event)">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </div>
+
+        <div class="col-xs-8 col-xs-offset-2" id="expContainer">
+            <div ng-repeat="exp in $ctrl.exp" class="riga">
+                <div class="col-xs-12 spazio"></div>
+                <div class="col-xs-1">
+                    <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink" ng-model="exp.selezionato"></md-switch>
+                </div>
+                <div class="col-xs-11 data-container" ng-class="{'disabled disabled_div': invalid = !exp.selezionato}">
+                    <div class="singola_esperienza container-fluid">
+                        <div class="col-xs-7 box_mansione">
+                            <p class="p_mansione" ng-bind="exp.mansione" ng-class="{'disabled': invalid = !exp.selezionato}"></p>
+                        </div>
+                        <div class="col-xs-4 box_azienda">
+                            <p class="p_azienda" ng-bind="exp.azienda"></p>
+                        </div>
+                        <button type="button" class="btn btn-primary pull-right" ng-click="$ctrl.expDialog($event, $index)" name="modificaExp">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                    </div>
+                    <div class="data_descrizione container-fluid">
+                        <div class="col-xs-2 seconda_riga">
+                            <p class="p_annoFin" ng-bind="exp.annoFine == null ? 'In corso' : exp.annoFine"></p>
+                            <p class="p_annoIn" ng-bind="exp.annoIn"></p>
+                        </div>
+                        <div class="col-xs-10 seconda_riga">
+                            <p class="p_desc" ng-bind="exp.descrizione"></p>
+                        </div>
+                        <button type="button" class="btn btn-danger pull-right" ng-click="$ctrl.deleteExp(exp)">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Inizio terza riga con formazione -->
+    <div class="row" id="form">
+
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h2>FORMAZIONE</h2>
+        </div>
+
+        <div class="col-xs-8 col-xs-offset-2">
+            <button type="button" class="btn btn-primary pull-right" id="aggiungiForm" ng-click="$ctrl.formDialog($event)">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </div>
+
+        <div class="col-xs-8 col-xs-offset-2" id="formContainer">
+            <div ng-repeat="form in $ctrl.form" class="riga">
+                <div class="col-xs-12 spazio"></div>
+                <div class="col-xs-1">
+                    <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink" ng-model="form.selezionato"></md-switch>
+                </div>
+                <div class="col-xs-11 data-container" ng-class="{'disabled disabled_div': !form.selezionato}">
+                    <div class="singola_formazione">
+                        <div class="col-xs-11 box_cert">
+                            <p class="p_cert" ng-bind="form.certificazione" ng-class="{'disabled': !form.selezionato}"></p>
+                        </div>
+                        <button type="button" class="btn btn-primary pull-right" ng-click="$ctrl.formDialog($event, $index)" name="modificaForm">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                    </div>
+                    <div class="data_descrizione">
+                        <div class="col-xs-2 seconda_riga">
+                            <p class="p_annoFin" ng-bind="form.annoFine"></p>
+                            <p class="p_annoIn" ng-bind="form.annoIn"></p>
+                        </div>
+                        <div class="col-xs-10 seconda_riga">
+                            <p class="p_ente" ng-bind="form.ente"></p>
+                        </div>
+                        <button type="button" class="btn btn-danger pull-right" ng-click="$ctrl.deleteForm(form)">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Inizio quarta riga con competenze linguistiche -->
+    <div class="row" id="lang">
+
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h2>COMPETENZE LINGUISTICHE</h2>
+        </div>
+
+        <div class="col-xs-8 col-xs-offset-2" id="lingueContainer">
+
+            <div>
+                <button type="button" class="btn btn-primary pull-right" id="aggiungiLingua" ng-click="$ctrl.addLang()">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+            </div>
+            <div class="col-xs-12 spazio"></div>
+
+            <table class="table table-striped">
+
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Lingua</th>
+                        <th>Ascolto</th>
+                        <th>Parlato</th>
+                        <th>Scritto</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody id="tableLingue">
+                    <tr ng-repeat="l in $ctrl.lang">
+                        <th>
+                            <md-switch ng-model="l.selezionato" class="md-primary" md-no-ink aria-label="Switch No Ink"></md-switch>
+                        </th>
+                        <th>
+                            <select name="lingua" class="form-control" ng-model="l.lingua" ng-options="lang for lang in $ctrl.listLang" ng-class="{'err': $ctrl.checkLang(l.lingua), 'disabled': !l.selezionato}"></select>
+                        </th>
+                        <th>
+                            <select name="ascoltato" class="form-control" ng-model="l.ascoltato" ng-options="lev for lev in $ctrl.listLvl" ng-class="{'disabled': !l.selezionato}"></select>
+                        </th>
+                        <th>
+                            <select name="parlato" class="form-control" ng-model="l.parlato" ng-options="lev for lev in $ctrl.listLvl" ng-class="{'disabled': !l.selezionato}"></select>
+                        </th>
+                        <th>
+                            <select name="scritto" class="form-control" ng-model="l.scritto" ng-options="lev for lev in $ctrl.listLvl" ng-class="{'disabled': !l.selezionato}"></select>
+                        </th>
+                        <th>
+                            <button type="button" class="btn btn-danger" ng-click="$ctrl.deleteLang(l)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn btn-primary su" ng-click="$ctrl.moveLang(l)">
+                                <span class="glyphicon glyphicon-chevron-up"></span>
+                            </button>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+    <!-- Inizio sesta riga con competenze professionali -->
+    <div class="row" id="compPro">
+
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h2>COMPETENZE PROFESSIONALI</h2>
+        </div>
+
+        <div class="col-xs-8 col-xs-offset-2" id="compProContainer" >
+
+            <div class="col-xs-1">
+                <md-switch ng-model="$ctrl.pInfo.selezionato" class="md-primary" md-no-ink aria-label="Switch No Ink"></md-switch>
+            </div>
+
+            <div class="col-xs-11" >
+                <div class="form-group">
+                    <textarea class="form-control" name="competenzePro" id="compProTxt" rows="10" ng-model="$ctrl.pInfo.competenzePro" ng-class="{'disabled': !$ctrl.pInfo.selezionato}"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Inizio riga con caratteristiche hardware -->
+    <div class="row" id="caratHard">
+
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h2>CARATTERISTICHE HARDWARE</h2>
+        </div>
+
+        <div class="col-xs-8 col-xs-offset-2" id="compProContainer" >
+
+            <div class="col-xs-1">
+                <md-switch ng-model="$ctrl.pInfo.selezionato" class="md-primary" md-no-ink aria-label="Switch No Ink"></md-switch>
+            </div>
+
+            <div class="col-xs-11" >
+                <div class="form-group">
+                    <textarea class="form-control" name="competenzePro" id="compProTxt" rows="10" ng-model="$ctrl.pInfo.competenzePro" ng-class="{'disabled': !$ctrl.pInfo.selezionato}"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- Inizio sesta riga con buttons salva/crea CV -->
+</div>
+<!-- fine container1 -->
+</div>

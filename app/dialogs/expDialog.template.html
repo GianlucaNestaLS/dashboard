@@ -1,0 +1,83 @@
+<md-dialog class="md-dialog-big">
+    <form name="expForm" ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 ng-bind="titolo"></h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+
+            <md-content layout-padding>
+
+                <md-input-container class="md-block">
+                    <label>Azienda</label>
+                    <input type="text" name="azienda" ng-model="azienda" required md-no-asterisk>
+                    <div ng-messages="expForm.azienda.$error" role="alert">
+                        <div ng-message="required">Azienda obbligatoria.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Mansione</label>
+                    <input type="text" name="mansione" ng-model="mansione" required md-no-asterisk>
+                    <div ng-messages="expForm.mansione.$error" role="alert">
+                        <div ng-message="required">Mansione obbligatoria.</div>
+                    </div>
+                </md-input-container>
+
+                <div layout="row">
+
+                    <md-input-container flex="50">
+                        <label>Anno Inizio</label>
+                        <md-select name="annoInizio" ng-model="annoInizio" ng-change="compareDate()" required md-no-asterisk>
+                            <md-option ng-repeat="year in years" value="{{year}}">
+                                {{year}}
+                            </md-option>
+                        </md-select>
+                        <div ng-messages="expForm.annoInizio.$error" role="alert">
+                            <div ng-message="required">Anno Inizio obbligatorio.</div>
+                            <div ng-message="compareDate">Anno Fine antecedente ad Anno Inizio.</div>
+                        </div>
+                    </md-input-container>
+
+                    <md-input-container flex="50">
+                        <label>Anno Fine</label>
+                        <md-select name="annoFine" ng-model="annoFine" ng-change="compareDate()" select-clear>
+                            <md-option value="{{null}}">In corso</md-option>
+                            <md-option ng-repeat="year in years" value="{{year}}">
+                                {{year}}
+                            </md-option>
+                        </md-select>
+                        <div ng-messages="expForm.annoInizio.$error" role="alert">
+                            <div ng-message="compareDate">Anno Fine antecedente ad Anno Inizio.</div>
+                        </div>
+                    </md-input-container>
+
+                </div>
+
+                <md-input-container class="md-block">
+                    <label>Descrizione</label>
+                    <textarea rows="3" ng-model="descrizione"></textarea>
+                </md-input-container>
+
+            </md-content>
+
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <button ng-click="answer()" aria-label="confirm" class="btn btn-success" ng-show="modifica == false" ng-disabled="expForm.$invalid">
+                <span class="glyphicon glyphicon-ok"></span>
+            </button>
+            <button ng-click="answer()" aria-label="modify" class="btn btn-success" ng-show="modifica == true" ng-disabled="expForm.$invalid">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

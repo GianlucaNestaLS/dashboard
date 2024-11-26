@@ -1,0 +1,46 @@
+<md-dialog class="md-dialog-big" id="pwdDialog">
+    <form name="pwdForm" ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Modifica Password</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+
+            <md-content layout-padding>
+
+                <md-input-container class="md-block">
+                    <label for="password">Nuova password</label>
+                    <input type="password" name="password" ng-model="password" ng-change="comparePassword()" required md-no-asterisk>
+                    <div ng-messages="pwdForm.password.$error" role="alert">
+                        <div ng-message="required">Nuova password obbligatoria.</div>
+                        <div ng-message="comparePassword">Le password devono essere uguali.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label for="confirmPassword">Conferma password</label>
+                    <input type="password" name="confirmPassword" ng-model="confirmPassword" ng-change="comparePassword()" required md-no-asterisk>
+                    <div ng-messages="pwdForm.confirmPassword.$error" role="alert">
+                        <div ng-message="required">Conferma password obbligatoria.</div>
+                        <div ng-message="comparePassword">Le password devono essere uguali.</div>
+                    </div>
+                </md-input-container>
+
+            </md-content>
+
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <button ng-click="answer()" aria-label="confirm" class="btn btn-success" ng-disabled="pwdForm.$invalid">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

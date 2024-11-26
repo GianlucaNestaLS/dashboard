@@ -1,0 +1,51 @@
+<div class="container">
+    <div class="row">
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h1>Società</h1>
+        </div>
+    </div>
+
+    <div class="col-xs-8 col-xs-offset-2">
+        <div id="btnGroup">
+            <button type="button" ng-click="$ctrl.socDialog($event)" class="btn btn-primary pull-right" id="aggiungiSocieta">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </div>
+        
+        <table class="table table-hover table-striped">
+
+            <thead>
+                <tr>
+                    <th>Logo</th>
+                    <th>Nome</th>
+                    <th>Dominio</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody id="tableSocieta">
+                <tr ng-repeat="soc in $ctrl.societa">
+                    <td>
+                        <img ng-src="{{soc.logo == null ? '' : $ctrl.path + '/' + soc.logo}}" alt=" ">
+                    </td>
+                    <td ng-bind="soc.nome"></td>
+                    <td ng-bind="soc.dominio"></td>
+
+                    <td class="tbl-icon">
+                        <button type="button" name="modificaSocieta" ng-click="$ctrl.socDialog($event, $index); $event.stopPropagation();" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                    </td>
+                    <td class="tbl-icon">
+                        <button type="button" ng-click="$ctrl.deleteSocDialog($event, $index); $event.stopPropagation();" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+</div>

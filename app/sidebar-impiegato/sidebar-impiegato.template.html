@@ -1,0 +1,51 @@
+<div class="sidebar">
+    <nav id="spy">
+
+        <div class="navbar-header" ng-if="$ctrl.profilo != 'USER'">
+            <a id="linkHome" ng-click="$ctrl.backHome()">
+                <span class="glyphicon glyphicon-chevron-left"></span> Torna alla home
+            </a>
+        </div>
+
+        <ul class="sidebar-nav nav nav-pills nav-stacked">
+            <li du-scrollspy="pInfo">
+                <a href="#pInfo" du-smooth-scroll>Informazioni Personali</a>
+            </li>
+            <li du-scrollspy="exp">
+                <a href="#exp" du-smooth-scroll>Esperienza</a>
+            </li>
+            <li du-scrollspy="form">
+                <a href="#form" du-smooth-scroll>Formazione</a>
+            </li>
+            <li du-scrollspy="lang">
+                <a href="#lang" du-smooth-scroll>Competenze Linguistiche</a>
+            </li>
+            <li du-scrollspy="compPro">
+                <a href="#compPro" du-smooth-scroll>Competenze Professionali</a>
+            </li>
+            <li du-scrollspy="caratHard">
+                <a href="#caratHard" du-smooth-scroll>Caratteristiche Hardware</a>
+            </li>
+            <li du-scrollspy="caratSoft">
+                <a href="#caratSoft" du-smooth-scroll>Caratteristiche Software</a>
+            </li>
+            <li>
+                <a id="openTagsBar" ng-click="$ctrl.showTags()">
+                    <span class="glyphicon glyphicon-tags"></span>Tags
+                </a>
+            </li>
+        </ul>
+
+        <hr>
+
+        <ul id="navBottom" class="nav nav-bottom">
+            <li>
+                <button type="button" class="btn btn-lg btn-warning" id="creaCV" ng-click="$ctrl.creaCV()">Crea CV</button>
+            </li>
+            <li>
+                <button type="button" class="btn btn-lg btn-success" id="salva" ng-click="$ctrl.salva()">Salva</button>
+            </li>
+        </ul>
+
+    </nav>
+</div>

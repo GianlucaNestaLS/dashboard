@@ -1,0 +1,111 @@
+<md-dialog class="md-dialog-big" id="impDialog">
+    <form name="impForm" ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 ng-bind="titolo"></h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+
+            <md-content layout-padding>
+
+                <md-input-container class="md-block" id="selectSocieta">
+                    <label>Società</label>
+                    <md-select name="societa" ng-model="societa" ng-change="modificaDominio()" required md-no-asterisk ng-disabled="profilo == 'ALL_USERS'">
+                        <md-option ng-repeat="soc in listaSoc" value="{{soc.id}}">{{soc.nome}}</md-option>
+                    </md-select>
+                    <div ng-messages="impForm.societa.$error" role="alert">
+                        <div ng-message="required">Società richiesta.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Nome</label>
+                    <input type="text" name="nome" ng-model="nome" ng-change="createId('nome')" md-maxlength="30" required md-no-asterisk>
+                    <div ng-messages="impForm.nome.$error" role="alert">
+                        <div ng-message="required">Nome richiesto.</div>
+                        <div ng-message="md-maxlength">Il nome può essere lungo al massimo 30 caratteri.</div>
+                        <div ng-message="check">Nome con caratteri non validi.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Cognome</label>
+                    <input type="text" name="cognome" ng-model="cognome" ng-change="createId('cognome')" md-maxlength="30" required md-no-asterisk>
+                    <div ng-messages="impForm.cognome.$error" role="alert">
+                        <div ng-message="required">Cognome richiesto.</div>
+                        <div ng-message="md-maxlength">Il cognome può essere lungo al massimo 30 caratteri.</div>
+                        <div ng-message="check">Cognome con caratteri non validi.</div>
+                    </div>
+                </md-input-container>
+
+                <div layout="row">
+
+                    <md-input-container flex="40">
+                        <label>Id</label>
+                        <input type="text" name="nomeId" ng-model="nomeId" ng-change="checkId('nomeId')" required md-no-asterisk>
+                        <div ng-messages="impForm.nomeId.$error" role="alert">
+                            <div ng-message="required">Id richiesto.</div>
+                            <div ng-message="check">Id con caratteri non validi.</div>
+                        </div>
+                    </md-input-container>
+
+                    <label class="mid">.</label>
+
+                    <md-input-container flex="40">
+                        <label>Id</label>
+                        <input type="text" name="cognomeId" ng-model="cognomeId" ng-change="checkId('cognomeId')"required md-no-asterisk>
+                        <div ng-messages="impForm.cognomeId.$error" role="alert">
+                            <div ng-message="required">Id richiesto.</div>
+                            <div ng-message="check">Id con caratteri non validi.</div>
+                        </div>
+                    </md-input-container>
+
+                    <label class="mid">
+                        @<span ng-bind="dominio"></span>
+                    </label>
+
+                </div>
+
+                <div layout="row" ng-if="profilo_imp != 'ADMINISTRATOR'">
+                    <md-checkbox class="md-primary" ng-model="all_users.value">Può gestire i CV dei dipendenti della società</md-checkbox>
+                </div>
+
+                <div layout="row">
+                    <md-input-container flex="40">
+                        <label for="password">Nuova password</label>
+                        <input type="password" name="password" ng-model="password" ng-change="comparePassword()" ng-required="!modifica" md-no-asterisk>
+                        <div ng-messages="impForm.password.$error" role="alert">
+                            <div ng-message="required">Nuova password obbligatoria.</div>
+                            <div ng-message="comparePassword">Le password devono essere uguali.</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container flex="40">
+                        <label for="confirmPassword">Conferma password</label>
+                        <input type="password" name="confirmPassword" ng-model="confirmPassword" ng-change="comparePassword()" ng-required="!modifica" md-no-asterisk>
+                        <div ng-messages="impForm.confirmPassword.$error" role="alert">
+                            <div ng-message="required">Conferma password obbligatoria.</div>
+                            <div ng-message="comparePassword">Le password devono essere uguali.</div>
+                        </div>
+                    </md-input-container>
+                </div>
+
+            </md-content>
+
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <button ng-click="answer()" aria-label="confirm" class="btn btn-success" ng-disabled="impForm.$invalid">
+                <span class="glyphicon glyphicon-ok" ng-show="modifica == false"></span>
+                <span class="glyphicon glyphicon-pencil" ng-show="modifica == true"></span>
+            </button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

@@ -1,0 +1,201 @@
+<!-- menu sinistro/destro in anteprima di stampa -->
+<div class="col-xs-1" id="destra">
+
+    <div class="dropdown">
+        <button class="btn btn-lg btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-cog"></span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <a id="pageBreak" ng-click="pageBreak = !pageBreak">
+                    <img src="app/img/page_break_icon.png">Page Break
+                    <span class="glyphicon glyphicon-ok" ng-show="pageBreak"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="dropdown">
+        <button id="stampaCV" class="btn btn-lg btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-print"></span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li ng-click="$ctrl.print()">
+                <a>Stampa</a>
+            </li>
+            <li ng-click="$ctrl.print_cliente()" ng-if="$ctrl.profilo != 'USER'">
+                <a>Stampa per cliente</a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<div class="col-xs-1" id="sinistra">
+
+    <button type="button" class="btn btn-lg btn-default" id="back" ng-click="$ctrl.back()">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+    </button>
+
+</div>
+
+<!-- inizio container2 -->
+
+<div class="container" id="cont2">
+
+    <div class="row">
+
+        <div class="col-xs-3 lato_sinistro">
+
+            <header>
+                <img class="logo" ng-src="{{$ctrl.logo}}">
+            </header>
+
+            <div class="spazio_fotoCV">
+                <img class="fotoCV" ng-src="{{$ctrl.foto}}">
+            </div>
+
+            <div class="dati">
+                <p id="nomeCV" class="maxiCV" ng-bind="$ctrl.pInfo.nome"></p>
+                <p id="cognomeCV" class="iperCV" ng-bind="$ctrl.pInfo.cognome" check-width-cv></p>
+                <p id="posizione_lavorativa" ng-bind="$ctrl.pInfo.mansione"></p>
+            </div>
+
+            <div class="contatti">
+                <p id="emailCV" ng-if="$ctrl.pInfo.dipendente" ng-bind="$ctrl.pInfo.username"></p>
+            </div>
+        </div>
+
+        <div class="col-xs-9 lato_destro">
+
+            <div class="blocco" ng-if="($ctrl.exp | filter:{selezionato:true}).length != 0">
+
+                <h4>ESPERIENZA</h4>
+
+                <div id="bloccoExp">
+
+                    <div ng-repeat="exp in $ctrl.exp | filter:{selezionato: true}" class="row riga" ng-class="{'break': bbExp}">
+                        <div class="singola_esperienza container-fluid">
+                            <div class="col-xs-7 box_mansione">
+                                <p class="p_mansione" ng-bind="exp.mansione"> </p>
+                            </div>
+                            <div class="col-xs-5 box_azienda">
+                                <p class="p_azienda" ng-bind="exp.azienda"></p>
+                            </div>
+                        </div>
+                        <div class="data_descrizione container-fluid">
+                            <div class="col-xs-2 seconda_riga">
+                                <p class="p_annoFin" ng-bind="exp.annoFine == null ? 'In corso' : exp.annoFine"></p>
+                                <p class="p_annoIn" ng-bind="exp.annoIn"></p>
+                            </div>
+                            <div class="col-xs-10 seconda_riga">
+                                <p class="p_desc" ng-bind="exp.descrizione"></p>
+                            </div>
+                        </div>
+                        <div class="pageBreaker" ng-show="pageBreak">
+                            <div class="col-xs-2 check">
+                                <a id="break" ng-click="bbExp = !bbExp" ng-class="{'blu': bbExp}">
+                                    <span class="glyphicon glyphicon-triangle-right"></span>
+                                </a>
+                            </div>
+                            <div class="col-xs-11 line" ng-show="bbExp" ng-model="bbExp"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="blocco" ng-if="($ctrl.form | filter:{selezionato:true}).length != 0">
+
+                <h4>FORMAZIONE</h4>
+
+                <div id="blocco_formazione">
+                    <div ng-repeat="form in $ctrl.form | filter:{selezionato: true}" class="row riga" ng-class="{'break': bbForm}">
+                        <div class="col-xs-12">
+                            <p class="formazione" ng-bind="form.certificazione"></p>
+                        </div>
+                        <div class="data_descrizione">
+                            <div class="col-xs-2 seconda_riga">
+                                <p class="p_annoIn" ng-bind="form.annoFine"></p>
+                                <p class="p_annoFin" ng-bind="form.annoIn"></p>
+                            </div>
+                            <div class="col-xs-10 seconda_riga">
+                                <p ng-bind="form.ente"></p>
+                            </div>
+                        </div>
+                        <div class="pageBreaker" ng-show="pageBreak">
+                            <div class="col-xs-2 check">
+                                <a id="break" ng-click="bbForm = !bbForm" ng-class="{'blu': bbForm}">
+                                    <span class="glyphicon glyphicon-triangle-right"></span>
+                                </a>
+                            </div>
+                            <div class="col-xs-11 line" ng-show="bbForm" ng-model="bbForm"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="blocco" ng-class="{'break': bbLang}" ng-if="($ctrl.lang | filter:{selezionato:true}).length != 0">
+
+                <h4>COMPETENZE LINGUISTICHE*</h4>
+
+                <table id="tableCV">
+
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>ASCOLTO</th>
+                            <th>PARLATO</th>
+                            <th>SCRITTO</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableCVBody" ng-repeat="l in $ctrl.lang | filter:{selezionato: true}">
+                        <tr>
+                            <th ng-bind="l.lingua"></th>
+                            <td ng-bind="l.ascoltato"></td>
+                            <td ng-bind="l.parlato"></td>
+                            <td ng-bind="l.scritto"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p class="sottotesto_lingue">
+                    Livelli: A1/A2: Livello base - B1/B2: Intermedio - C1/C2: Avanzato
+                    <br> *Secondo il Quadro Comune Europeo di Riferimento delle Lingue
+                </p>
+
+                <div class="row riga">
+                    <div class="pageBreaker" ng-show="pageBreak">
+                        <div class="col-xs-2 check">
+                            <a ng-click="bbLang = !bbLang" ng-class="{'blu': bbLang}">
+                                <span class="glyphicon glyphicon-triangle-right"></span>
+                            </a>
+                        </div>
+                        <div class="col-xs-11 line" ng-show="bbLang" ng-model="bbLang"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="blocco" ng-if="$ctrl.pInfo.selezionato && $ctrl.pInfo.competenzePro.length > 0">
+
+                <h4>COMPETENZE PROFESSIONALI</h4>
+
+                <div class="row">
+                    <div class="col-xs-12" id="compProCVTxt">
+                        <p class="p_comProCVTxt" ng-bind="$ctrl.pInfo.competenzePro"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p class="trattamento_dati">Autorizzo il trattamento dei dati personali contenuti nel mio curriculum vitae in base all’art. 13 del D. Lgs. 196/2003 e all’art. 13 GDPR 679/16.</p>
+</footer>

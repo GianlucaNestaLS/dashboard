@@ -1,0 +1,73 @@
+<div class="container">
+    <div class="row">
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h1>Risultati Ricerca</h1>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-xs-8 col-xs-offset-2" id="chipsContainer">
+            <md-chips ng-model="$ctrl.chipTags" readonly="true" md-removable="true" md-on-remove="$ctrl.searchTag()"></md-chips>
+        </div>
+
+        <div class="col-xs-8 col-xs-offset-2" id="filtraContainer">
+            <span class="glyphicon glyphicon-tags searchIcon"></span>
+            <md-autocomplete id="search" md-selected-item="$ctrl.selectedItem" md-search-text="$ctrl.searchText" md-items="tag in $ctrl.querySearch($ctrl.searchText)" md-selected-item-change="$ctrl.newTag(tag)" md-min-length="0" md-input-maxlength="20" placeholder="Ricerca Tag">
+                <md-item-template>
+                    <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">{{tag}}</span>
+                </md-item-template>
+                <md-not-found>
+                    Non è stata trovata alcuna tag corrispondente a "{{$ctrl.searchText}}".
+                </md-not-found>
+            </md-autocomplete>
+        </div>
+
+    </div>
+
+    <div class="row" id="filtriTag">
+        <div class="col-xs-2 col-xs-offset-2" ng-if="$ctrl.profilo == 'ADMINISTRATOR'">
+            <select class="form-control" ng-model="search.societa">
+                <option value="">Tutte le Società</option>
+                <option ng-repeat="soc in $ctrl.listaSoc" value="{{soc.nome}}">{{soc.nome}}</option>
+            </select>
+        </div>
+        <div class="col-xs-2" ng-class="{'col-xs-offset-2': $ctrl.profilo == 'ALL_USERS'}">
+            <select class="form-control" ng-model="search.dipendente">
+                <option value="">Tutti gli Impiegati</option>
+                <option value="1">Dipendenti</option>
+                <option value="0">Non Dipendenti</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-xs-8 col-xs-offset-2">
+        <table class="table table-hover table-striped">
+
+            <thead>
+                <tr>
+                    <th>Società</th>
+                    <th>Cognome</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <!--th>Telefono</th-->
+                    <th>Tag</th>
+                </tr>
+            </thead>
+
+            <tbody id="risultatiRicerca">
+                <tr ng-repeat="imp in $ctrl.impiegati | orderBy:'-tagsNumber' | filter:search" ng-click="$ctrl.open(imp.userid)">
+                    <td ng-bind="imp.dipendente == 1 ? imp.societa : ''"></td>
+                    <td ng-bind="imp.cognome"></td>
+                    <td ng-bind="imp.nome"></td>
+                    <td ng-bind="imp.dipendente == 1 ? imp.username : imp.email_pers"></td>
+                    <!--td ng-bind="imp.telefono"></td-->
+                    <td ng-bind="imp.tag"></td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

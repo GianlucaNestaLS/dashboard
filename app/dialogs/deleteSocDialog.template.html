@@ -1,0 +1,35 @@
+<md-dialog>
+    <form ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools" id="dialog-toolbar">
+                <h2>Vuoi eliminare <span ng-bind="societa"></span>?</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+
+                <p>
+                Confermi di voler eliminare questa società?
+                </p>
+
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <button type="button" class="btn btn-big btn-primary" ng-click="answer('annulla')">
+                Annulla
+            </button>
+            <span flex></span>
+            <button class="btn btn-big btn-danger" ng-click="answer('elimina')">
+                Elimina
+            </button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

@@ -1,0 +1,100 @@
+<md-dialog class="md-dialog-big">
+    <form name="formForm" ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 ng-bind="titolo"></h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon aria-label="Close dialog" class="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <!-- <div class="md-dialog-content">
+
+                <div class="form-group">
+
+                    <label>Certificazione/Titolo di studio:</label>
+                    <input type="text" ng-model= "certificazione" class="form-control" autofocus>
+
+                    <div class="col-xs-6 annoI">
+                            <label>Anno Inizio:</label>
+                            <select class="form-control" ng-options="date for date in years" ng-model="annoInizio"
+                                ng-class="{'err': invalid = (annoInizio > annoFine)}"></select>
+                    </div>
+
+                    <div class="col-xs-6 annoF">
+                            <label>Anno Fine:</label>
+                            <select class="form-control" ng-options="date for date in years" ng-model="annoFine"
+                                ng-class="{'err': invalid = (annoInizio > annoFine)}"></select>
+                    </div>
+
+                    <label>Ente/Istituto:</label>
+                    <input type="text" class="form-control" ng-model="ente">
+
+                </div>
+
+            </div> -->
+
+            <md-content layout-padding>
+
+                <md-input-container class="md-block">
+                    <label>Certificazione/Titolo di studio</label>
+                    <input type="text" name="cert" ng-model="certificazione" required md-no-asterisk>
+                    <div ng-messages="formForm.cert.$error" role="alert">
+                        <div ng-message="required">Certificazione obbligatoria.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Ente/Istituto</label>
+                    <input type="text" name="ente" ng-model="ente">
+                </md-input-container>
+
+                <div layout="row">
+
+                    <md-input-container flex="50">
+                        <label>Anno Inizio</label>
+                        <md-select name="annoInizio" ng-model="annoInizio" ng-change="compareDate()" required md-no-asterisk>
+                            <md-option ng-repeat="year in years" value="{{year}}">
+                                {{year}}
+                            </md-option>
+                        </md-select>
+                        <div ng-messages="formForm.annoInizio.$error" role="alert">
+                            <div ng-message="required">Anno Inizio obbligatorio.</div>
+                            <div ng-message="compareDate">Anno Fine antecedente ad Anno Inizio.</div>
+                        </div>
+                    </md-input-container>
+
+                    <md-input-container flex="50">
+                        <label>Anno Fine</label>
+                        <md-select name="annoFine" ng-model="annoFine" ng-change="compareDate()" required md-no-asterisk>
+                            <md-option ng-repeat="year in years" value="{{year}}">
+                                {{year}}
+                            </md-option>
+                        </md-select>
+                        <div ng-messages="formForm.annoFine.$error" role="alert">
+                            <div ng-message="required">Anno Fine obbligatorio.</div>
+                            <div ng-message="compareDate">Anno Fine antecedente ad Anno Inizio.</div>
+                        </div>
+                    </md-input-container>
+
+                </div>
+
+            </md-content>
+
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <button ng-click="answer()" aria-label="confirm" class="btn btn-success" ng-show="modifica == false" ng-disabled="formForm.$invalid">
+                <span class="glyphicon glyphicon-ok"></span>
+            </button>
+            <button ng-click="answer()" aria-label="modify" class="btn btn-success" ng-show="modifica == true" ng-disabled="formForm.$invalid">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>
