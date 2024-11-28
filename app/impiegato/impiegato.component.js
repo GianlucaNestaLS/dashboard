@@ -37,6 +37,7 @@ angular.module('impiegato')
                     const lingue = checkLingue();
                     if (email_pers && lingue) {
                         impiegatoOp.salvaDati(datiPagina()).then(function (result) {
+                            console.log('impiegatoOp.salvaDati', result);
                             if (result.data.forbidden) {
                                 $location.path('/login');
                             } else if (result.data.success) {
@@ -570,6 +571,7 @@ angular.module('impiegato')
                 } */
 
                 function datiPagina() {
+                    console.log('datiPagina', dataImp.getDati());
                     /*
                     var dati = {};
 
@@ -655,6 +657,7 @@ angular.module('impiegato')
             },
 
             salvaDati: function salvaDati(data) {
+                console.log('salvaDati', data);
                 return $http.post(serviceConfig.salvaDati, data, getOptions());
             },
 
