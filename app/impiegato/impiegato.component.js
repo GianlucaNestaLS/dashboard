@@ -32,11 +32,41 @@ angular.module('impiegato')
                 });
 
                 /* ------------------------------------ TASTO SALVA ------------------------------------ */
+                // $scope.$on('salva', function (event, args) {
+                //     const email_pers = checkEmailPers();
+                //     const lingue = checkLingue();
+                //     if (email_pers && lingue) {
+                //         impiegatoOp.salvaDati(datiPagina()).then(function (result) {
+                //             console.log('impiegatoOp.salvaDati', result);
+                //             if (result.data.forbidden) {
+                //                 $location.path('/login');
+                //             } else if (result.data.success) {
+                //                 toastOk.text = 'Salvataggio dati avvenuto con successo.';
+                //                 $.toast(toastOk);
+                //             } else {
+                //                 toastErr(result.data.errorMsg);
+                //             }
+                //         });
+                //     } else {
+                //         if (!email_pers) toastErr('Formato e-mail non valido!');
+                //         if (!lingue) toastErr('Campi lingua non valorizzati!');
+                //     }
+                // });
+
                 $scope.$on('salva', function (event, args) {
                     const email_pers = checkEmailPers();
                     const lingue = checkLingue();
                     if (email_pers && lingue) {
-                        impiegatoOp.salvaDati(datiPagina()).then(function (result) {
+                        const dati = datiPagina();
+
+                        // const datiHardwareSoftware = getDatiHardwareSoftware();
+                        // datiHardwareSoftware.dataCompilazione = datiHardwareSoftware.dataCompilazione.toISOString().split('T')[0];
+                        // console.log('datiHardwareSoftware', datiHardwareSoftware);
+                        // dataImp.hardwareSoftware = datiHardwareSoftware;
+
+                    console.log('dati', dati);  
+                
+                        impiegatoOp.salvaDati(dati).then(function (result) {
                             console.log('impiegatoOp.salvaDati', result);
                             if (result.data.forbidden) {
                                 $location.path('/login');
@@ -44,6 +74,7 @@ angular.module('impiegato')
                                 toastOk.text = 'Salvataggio dati avvenuto con successo.';
                                 $.toast(toastOk);
                             } else {
+                                console.log('Errore durante il salvataggio:', result.data.errorMsg);
                                 toastErr(result.data.errorMsg);
                             }
                         });
@@ -155,53 +186,117 @@ angular.module('impiegato')
                     self.years = setYears();
                 }*/
 
+                function getMonthName(monthIndex) {
+                    const months = [
+                        'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 
+                        'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+                    ];
+                    return months[monthIndex];
+                }
+
                 function getDatiImpiegato(id) {
                     impiegatoOp.getDatiImpiegato(id).then(function (result) {
                         if (result.data.forbidden) {
                             $location.path('/login');
-                        }
-                        else {
-
+                        } else {
                             dataImp.setDati(result.data);
-
-                            self.pInfo = dataImp.getDati().pInfo;
-                            self.pInfo.dipendente = intToBool(dataImp.getDati().pInfo.dipendente);
-                            self.pInfo.selezionato = intToBool(dataImp.getDati().pInfo.selezionato);
-                            $rootScope.title = $state.current.title + self.pInfo.nome + ' ' + self.pInfo.cognome;
-
-                            //dataImp.setFoto(dataImp.getPath() + '/' + dataImp.getDati().pInfo.foto);// + '.jpg');
-                            //self.foto = dataImp.getFoto();
-                            self.foto = dataImp.getPath() + '/' + dataImp.getDati().pInfo.foto;
-                            if (dataImp.getDati().pInfo.foto == null) {
-                                self.foto = dataImp.getPath() + '/' + dataImp.getDati().pInfo.logo;
+                
+                            if (result.data.pInfo) {
+                                self.pInfo = result.data.pInfo;
+                                self.pInfo.dipendente = intToBool(self.pInfo.dipendente);
+                                self.pInfo.selezionato = intToBool(self.pInfo.selezionato);
+                                $rootScope.title = $state.current.title + self.pInfo.nome + ' ' + self.pInfo.cognome;
+                            } else {
+                                console.error('pInfo is null or undefined');
                             }
                             self.exp = dataImp.getDati().exp;
                             self.exp.forEach(function (element) {
                                 element.selezionato = intToBool(element.selezionato);
                             }, this);
-
+                
                             self.form = dataImp.getDati().form;
                             self.form.forEach(function (element) {
                                 element.selezionato = intToBool(element.selezionato);
                             }, this);
-
+                
                             self.lang = dataImp.getDati().lang;
                             self.lang.forEach(function (element) {
                                 element.selezionato = intToBool(element.selezionato);
                             }, this);
-
+                
                             self.tags = dataImp.getDati().tags;
                             self.listLvl = dataImp.getDati().listLvl;
                             self.listLang = dataImp.getDati().listLang;
-
                             self.years = setYears();
-                            //setLang();
+
+                            // Conversione della data di compilazione (data_compilazione) nel formato "Mese Anno"
+                            if (dataImp.getDati().hardware && dataImp.getDati().hardware.data_compilazione) {
+                                var date = new Date(dataImp.getDati().hardware.data_compilazione);
+                                var year = date.getFullYear();
+                                var month = getMonthName(date.getMonth());  // Ottieni il mese in formato lungo
+                                self.hardware = dataImp.getDati().hardware;
+                                self.hardware.data_compilazione = month + ' ' + year;  // Impostiamo la data nel formato "Mese Anno"
+                            }
+
+                            console.log('data', dataImp.getDati().hardware.data_compilazione);
+                            self.hardware = dataImp.getDati().hardware;
+                            self.software = dataImp.getDati().software;
                         }
+                
                         if (self.profilo == 'ALL_USERS' && self.pInfo.id_soc != token.getSocieta()) {
                             $location.path('/impiegati');
                         }
                     });
                 }
+                    
+
+                // function getDatiImpiegato(id) {
+                //     impiegatoOp.getDatiImpiegato(id).then(function (result) {
+                //         if (result.data.forbidden) {
+                //             $location.path('/login');
+                //         }
+                //         else {
+
+                //             dataImp.setDati(result.data);
+
+                //             self.pInfo = dataImp.getDati().pInfo;
+                //             self.pInfo.dipendente = intToBool(dataImp.getDati().pInfo.dipendente);
+                //             self.pInfo.selezionato = intToBool(dataImp.getDati().pInfo.selezionato);
+                //             $rootScope.title = $state.current.title + self.pInfo.nome + ' ' + self.pInfo.cognome;
+
+                //             //dataImp.setFoto(dataImp.getPath() + '/' + dataImp.getDati().pInfo.foto);// + '.jpg');
+                //             //self.foto = dataImp.getFoto();
+                //             self.foto = dataImp.getPath() + '/' + dataImp.getDati().pInfo.foto;
+                //             if (dataImp.getDati().pInfo.foto == null) {
+                //                 self.foto = dataImp.getPath() + '/' + dataImp.getDati().pInfo.logo;
+                //             }
+                //             self.exp = dataImp.getDati().exp;
+                //             self.exp.forEach(function (element) {
+                //                 element.selezionato = intToBool(element.selezionato);
+                //             }, this);
+
+                //             self.form = dataImp.getDati().form;
+                //             self.form.forEach(function (element) {
+                //                 element.selezionato = intToBool(element.selezionato);
+                //             }, this);
+
+                //             self.lang = dataImp.getDati().lang;
+                //             self.lang.forEach(function (element) {
+                //                 element.selezionato = intToBool(element.selezionato);
+                //             }, this);
+
+                //             self.tags = dataImp.getDati().tags;
+                //             self.listLvl = dataImp.getDati().listLvl;
+                //             self.listLang = dataImp.getDati().listLang;
+
+                //             self.years = setYears();
+                //             //setLang();
+                //         }
+                //         if (self.profilo == 'ALL_USERS' && self.pInfo.id_soc != token.getSocieta()) {
+                //             $location.path('/impiegati');
+                //         }
+                //     });
+                // }
 
 
                 /* ------------------------------------ DIALOG FOTO PROFILO ------------------------------------ */
@@ -571,41 +666,6 @@ angular.module('impiegato')
                 } */
 
                 function datiPagina() {
-                    console.log('datiPagina', dataImp.getDati());
-                    /*
-                    var dati = {};
-
-                    dati.pInfo = angular.copy(self.pInfo);
-                    dati.pInfo.dipendente = boolToInt(dati.pInfo.dipendente);
-                    dati.pInfo.selezionato = boolToInt(dati.pInfo.selezionato);
-
-                    dati.exp = angular.copy(self.exp);
-                    dati.exp.forEach(function (element) {
-                        element.selezionato = boolToInt(element.selezionato);
-                        if (!(element.azienda || element.mansione || element.annoIn || element.annoFine || element.descrizione)) {
-                            dati.exp.splice(dati.exp.indexOf(element), 1);
-                        }
-                    }, this);
-
-                    dati.form = angular.copy(self.form);
-                    dati.form.forEach(function (element) {
-                        element.selezionato = boolToInt(element.selezionato);
-                        if (!(element.ente || element.certificazione || element.annoIn || element.annoFine)) {
-                            dati.form.splice(dati.form.indexOf(element), 1);
-                        }
-                    }, this);
-
-                    dati.lang = angular.copy(self.lang);
-                    dati.lang.forEach(function (element) {
-                        element.selezionato = boolToInt(element.selezionato);
-                        if (!(element.lingua || element.ascoltato || element.parlato || element.scritto)) {
-                            dati.lang.splice(dati.lang.indexOf(element), 1);
-                        }
-                    }, this);
-
-                    dati.tags = angular.copy(self.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
-
-                    return dati;*/
                     return dataImp.getDati(true);
                 }
 
@@ -657,7 +717,6 @@ angular.module('impiegato')
             },
 
             salvaDati: function salvaDati(data) {
-                console.log('salvaDati', data);
                 return $http.post(serviceConfig.salvaDati, data, getOptions());
             },
 

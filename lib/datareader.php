@@ -44,6 +44,8 @@ class DataReader
         $data["form"] = self::getForm($db, $id);
         $data["lang"] = self::getLang($db, $id);
         $data["tags"] = self::getTags($db, $id);
+        $data["hardware"] = self::getHardware($db, $id);
+        $data["software"] = self::getSoftware($db, $id);
         if ($full) {
             $data["listLvl"] = self::getListaLivelli($db);
             $data["listLang"] = self::getListaLingue($db);
@@ -222,15 +224,88 @@ class DataReader
         return $data;
     }
 
+    private static function getHardware($db, $userid) {
+        $hardwareData = [];
+        $query = "SELECT 
+                    data_compilazione,
+                    marca_modello_notebook,
+                    serial_number,
+                    product_key,
+                    processore,
+                    memoria_ram,
+                    tipo_storage,
+                    capacita_storage,
+                    monitor_esterno,
+                    tastiera_mouse_esterni,
+                    stampante
+                  FROM hardware
+                  WHERE user_id = ?";
+    
+        $stmt = $db->prepare($query);
+        $stmt->bind_param('i', $userid);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            $hardwareData = $result->fetch_assoc();
+        }
+    
+        $stmt->close();
+        return $hardwareData;
+    }
+    
+    private static function getSoftware($db, $userid) {
+        $softwareData = [];
+        $query = "SELECT 
+                    sistema_operativo,
+                    office_suite,
+                    browser,
+                    antivirus,
+                    software_comunicazione,
+                    software_crittografia
+                  FROM software
+                  WHERE user_id = ?";
+    
+        $stmt = $db->prepare($query);
+        $stmt->bind_param('i', $userid);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            $softwareData = $result->fetch_assoc();
+        }
+    
+        $stmt->close();
+        return $softwareData;
+    }
+    
+    
+    // private function getTags($db, $id) {
+    //     $data = [];
+    //     $result = $db->query("SELECT tag FROM tags WHERE userid = $id ORDER BY @rownum");
+        
+    //     while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+    //         $data[] = $row;
+    //     }
+    //     return $data;
+    // }
 
     private function getTags($db, $id) {
         $data = [];
-        $result = $db->query("SELECT tag FROM tags WHERE userid = $id ORDER BY @rownum");
+        $query = "
+            SELECT tag, @rownum := @rownum + 1 AS rownum 
+            FROM tags
+            CROSS JOIN (SELECT @rownum := 0) AS init
+            WHERE userid = '$id'
+            ORDER BY tag
+        ";
+        $result = $db->query($query);
         while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
             $data[] = $row;
         }
         return $data;
     }
+    
 
 
     private function getListaLingue($db) {

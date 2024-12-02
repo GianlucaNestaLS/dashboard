@@ -5,6 +5,9 @@ angular.module('dataImp')
 
         var dati, /*foto,*/ path;
 
+        self.hardware = {};
+        self.software = {};
+
         self.getDati = function(saving = false) {
             if (saving) {
                 var data = {};
@@ -37,10 +40,17 @@ angular.module('dataImp')
                 }, this);
 
                 data.tags = angular.copy(dati.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
+
+                
+                
+                data.hardware = angular.copy(self.hardware);
+                data.software = angular.copy(self.software);
+                console.log('getDati', data);
                 return data;
             }
             return dati;
         };
+
 
         function boolToInt(bb) {
             return (bb ? 1 : 0);
