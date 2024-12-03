@@ -58,14 +58,15 @@ angular.module('impiegato')
                     const lingue = checkLingue();
                     if (email_pers && lingue) {
                         const dati = datiPagina();
+                        console.log('dati', dati);  
 
-                        const datiHardware = getDatiHardware();
-                        console.log('datiHardware', datiHardware);
+
+                        // const datiHardware = getDatiHardware();
+                        // console.log('datiHardware', datiHardware);
                         // datiHardwareSoftware.dataCompilazione = datiHardwareSoftware.dataCompilazione.toISOString().split('T')[0];
                         // console.log('datiHardwareSoftware', datiHardwareSoftware);
                         // dataImp.hardwareSoftware = datiHardwareSoftware;
 
-                    console.log('dati', dati);  
                 
                         impiegatoOp.salvaDati(dati).then(function (result) {
                             console.log('impiegatoOp.salvaDati', result);
@@ -90,8 +91,14 @@ angular.module('impiegato')
                         dataCompilazione: self.hardware.data_compilazione,
                         marcaModelloNotebook: self.hardware.marca_modello_notebook,
                         serialNumber: self.hardware.serial_number,
-                        
-                      
+                        productKey: self.hardware.product_key,
+                        processore: self.hardware.processore,
+                        memoriaRam: self.hardware.memoria_ram,
+                        tipoStorage: self.hardware.tipo_storage,
+                        capacitaStorage: self.hardware.capacita_storage,
+                        monitorEsterno: self.hardware.monitor_esterno,
+                        tastieraMouseEsterni: self.hardware.tastiera_mouse_esterni,
+                        stampante: self.hardware.stampante
                     };
                 }
 
@@ -241,6 +248,11 @@ angular.module('impiegato')
                                 self.hardware = angular.copy(self.hardware);
                                 self.hardware.data_compilazione = new Date(year, monthIndex, 1);
                                 dataImp.getDati().hardware.data_compilazione = self.hardware.data_compilazione; 
+                            }
+                            if (self.hardware) {
+                                self.hardware.monitor_esterno = intToBool(self.hardware.monitor_esterno);
+                                self.hardware.stampante = intToBool(self.hardware.stampante);
+                                self.hardware.tastiera_mouse_esterni = intToBool(self.hardware.tastiera_mouse_esterni);
                             }
                         }
                 

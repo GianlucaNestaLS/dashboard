@@ -12,8 +12,11 @@ angular.module('dataImp')
             if (saving) {
                 var data = {};
                 data.pInfo = angular.copy(dati.pInfo);
+                console.log('data.pInfo', data.pInfo);
                 data.pInfo.dipendente = boolToInt(data.pInfo.dipendente);
                 data.pInfo.selezionato = boolToInt(data.pInfo.selezionato);
+
+                
 
                 data.exp = angular.copy(dati.exp);
                 data.exp.forEach(function (element) {
@@ -43,7 +46,10 @@ angular.module('dataImp')
 
                 data.tags = angular.copy(dati.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
                 
-                console.log('self hardware', self.hardware);
+
+                data.hardware = angular.copy(self.hardware);
+                data.software = angular.copy(self.software);
+                console.log('self software', data.software);
         
                 self.hardware = {
                     data_compilazione: self.hardware.data_compilazione, // esempio, prendi questi dati dal form
@@ -52,8 +58,7 @@ angular.module('dataImp')
                 };
                 
                 
-                data.hardware = angular.copy(self.hardware);
-                data.software = angular.copy(self.software);
+
                 console.log('getDati', data);
                 return data;
             }
