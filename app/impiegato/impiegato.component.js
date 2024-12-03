@@ -59,7 +59,8 @@ angular.module('impiegato')
                     if (email_pers && lingue) {
                         const dati = datiPagina();
 
-                        // const datiHardwareSoftware = getDatiHardwareSoftware();
+                        const datiHardware = getDatiHardware();
+                        console.log('datiHardware', datiHardware);
                         // datiHardwareSoftware.dataCompilazione = datiHardwareSoftware.dataCompilazione.toISOString().split('T')[0];
                         // console.log('datiHardwareSoftware', datiHardwareSoftware);
                         // dataImp.hardwareSoftware = datiHardwareSoftware;
@@ -83,6 +84,16 @@ angular.module('impiegato')
                         if (!lingue) toastErr('Campi lingua non valorizzati!');
                     }
                 });
+
+                function getDatiHardware() {
+                    return {
+                        dataCompilazione: self.hardware.data_compilazione,
+                        marcaModelloNotebook: self.hardware.marca_modello_notebook,
+                        serialNumber: self.hardware.serial_number,
+                        
+                      
+                    };
+                }
 
                 function checkEmailPers() {
                     return self.pInfo.email_pers == '' || self.pInfo.email_pers == null || /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,6}/.test(self.pInfo.email_pers);
@@ -185,15 +196,7 @@ angular.module('impiegato')
                     self.listLang = dataImp.getDati().listLang;
                     self.years = setYears();
                 }*/
-
-                function getMonthName(monthIndex) {
-                    const months = [
-                        'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 
-                        'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
-                    ];
-                    return months[monthIndex];
-                }
-
+                
                 function getDatiImpiegato(id) {
                     impiegatoOp.getDatiImpiegato(id).then(function (result) {
                         if (result.data.forbidden) {
@@ -229,18 +232,16 @@ angular.module('impiegato')
                             self.listLang = dataImp.getDati().listLang;
                             self.years = setYears();
 
-                            // Conversione della data di compilazione (data_compilazione) nel formato "Mese Anno"
-                            if (dataImp.getDati().hardware && dataImp.getDati().hardware.data_compilazione) {
-                                var date = new Date(dataImp.getDati().hardware.data_compilazione);
-                                var year = date.getFullYear();
-                                var month = getMonthName(date.getMonth());  // Ottieni il mese in formato lungo
-                                self.hardware = dataImp.getDati().hardware;
-                                self.hardware.data_compilazione = month + ' ' + year;  // Impostiamo la data nel formato "Mese Anno"
-                            }
-
-                            console.log('data', dataImp.getDati().hardware.data_compilazione);
                             self.hardware = dataImp.getDati().hardware;
                             self.software = dataImp.getDati().software;
+
+                            if (self.hardware && self.hardware.data_compilazione) {
+                                var [year, month] = self.hardware.data_compilazione.split('-');
+                                var monthIndex = month - 1;
+                                self.hardware = angular.copy(self.hardware);
+                                self.hardware.data_compilazione = new Date(year, monthIndex, 1);
+                                dataImp.getDati().hardware.data_compilazione = self.hardware.data_compilazione; 
+                            }
                         }
                 
                         if (self.profilo == 'ALL_USERS' && self.pInfo.id_soc != token.getSocieta()) {

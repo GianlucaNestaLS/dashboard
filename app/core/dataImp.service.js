@@ -39,8 +39,17 @@ angular.module('dataImp')
                     }
                 }, this);
 
-                data.tags = angular.copy(dati.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
 
+
+                data.tags = angular.copy(dati.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
+                
+                console.log('self hardware', self.hardware);
+        
+                self.hardware = {
+                    data_compilazione: self.hardware.data_compilazione, // esempio, prendi questi dati dal form
+                    marca_modello_notebook: self.hardware.marca_modello_notebook, 
+                    // ... altri campi di hardware
+                };
                 
                 
                 data.hardware = angular.copy(self.hardware);
