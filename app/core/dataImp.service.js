@@ -12,7 +12,6 @@ angular.module('dataImp')
             if (saving) {
                 var data = {};
                 data.pInfo = angular.copy(dati.pInfo);
-                console.log('data.pInfo', data.pInfo);
                 data.pInfo.dipendente = boolToInt(data.pInfo.dipendente);
                 data.pInfo.selezionato = boolToInt(data.pInfo.selezionato);
 
@@ -46,20 +45,25 @@ angular.module('dataImp')
 
                 data.tags = angular.copy(dati.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
                 
-
-                data.hardware = angular.copy(self.hardware);
-                data.software = angular.copy(self.software);
-                console.log('self software', data.software);
-        
-                self.hardware = {
-                    data_compilazione: self.hardware.data_compilazione, // esempio, prendi questi dati dal form
-                    marca_modello_notebook: self.hardware.marca_modello_notebook, 
-                    // ... altri campi di hardware
-                };
+                data.hardware = angular.copy(dati.hardware);
                 
+                if (data.hardware && data.hardware.data_compilazione) {
+                    var date = new Date(data.hardware.data_compilazione);
                 
+                    var year = date.getFullYear();
+                    var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    var day = date.getDate().toString().padStart(2, '0');
+                
+                    data.hardware.data_compilazione = `${year}-${month}-${day}`;
+                    console.log('data', data.hardware.data_compilazione);
+                }
 
-                console.log('getDati', data);
+                data.hardware.monitor_esterno = intToBool(data.hardware.monitor_esterno);
+                data.hardware.stampante = intToBool(data.hardware.stampante);
+                data.hardware.tastiera_mouse_esterni = intToBool(data.hardware.tastiera_mouse_esterni);
+
+                data.software = angular.copy(dati.software);
+
                 return data;
             }
             return dati;
@@ -68,6 +72,10 @@ angular.module('dataImp')
 
         function boolToInt(bb) {
             return (bb ? 1 : 0);
+        }
+
+        function intToBool(int) {
+            return int == true;
         }
 
         self.setDati = function(d) {

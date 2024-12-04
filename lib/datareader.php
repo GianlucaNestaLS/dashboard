@@ -239,7 +239,7 @@ class DataReader
                     tastiera_mouse_esterni,
                     stampante
                   FROM hardware
-                  WHERE user_id = ?";
+                  WHERE userid = ?";
     
         $stmt = $db->prepare($query);
         $stmt->bind_param('i', $userid);
@@ -264,7 +264,7 @@ class DataReader
                     software_comunicazione,
                     software_crittografia
                   FROM software
-                  WHERE user_id = ?";
+                  WHERE userid = ?";
     
         $stmt = $db->prepare($query);
         $stmt->bind_param('i', $userid);

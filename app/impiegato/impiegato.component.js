@@ -58,7 +58,6 @@ angular.module('impiegato')
                     const lingue = checkLingue();
                     if (email_pers && lingue) {
                         const dati = datiPagina();
-                        console.log('dati', dati);  
 
 
                         // const datiHardware = getDatiHardware();
@@ -206,6 +205,7 @@ angular.module('impiegato')
                 
                 function getDatiImpiegato(id) {
                     impiegatoOp.getDatiImpiegato(id).then(function (result) {
+
                         if (result.data.forbidden) {
                             $location.path('/login');
                         } else {
@@ -244,10 +244,9 @@ angular.module('impiegato')
 
                             if (self.hardware && self.hardware.data_compilazione) {
                                 var [year, month] = self.hardware.data_compilazione.split('-');
-                                var monthIndex = month - 1;
                                 self.hardware = angular.copy(self.hardware);
-                                self.hardware.data_compilazione = new Date(year, monthIndex, 1);
-                                dataImp.getDati().hardware.data_compilazione = self.hardware.data_compilazione; 
+                                self.hardware.data_compilazione = new Date(year, month - 1, 1);
+                                dataImp.getDati().hardware.data_compilazione = self.hardware.data_compilazione;
                             }
                             if (self.hardware) {
                                 self.hardware.monitor_esterno = intToBool(self.hardware.monitor_esterno);
