@@ -5,6 +5,13 @@
         </div>
     </div>
 
+    <div ng-if="$ctrl.isLoading" class="overlay">
+        <div class="loader">
+            <div class="spinner"></div>
+            <p>Caricamento in corso...</p>
+        </div>
+    </div>
+
     <div class="row" id="filtriImp">
         <div class="col-xs-2 col-xs-offset-2" ng-if="$ctrl.profilo == 'ADMINISTRATOR'">
             <select class="form-control" ng-model="search.societa">
@@ -92,7 +99,13 @@
                 </label>
                 <input type="file" id="file" files-input ng-model="file" ng-change="$ctrl.import(file)" accept="application/json">
             </button>
+            <button type="button" class="btn btn-info pull-right" id="uploadCV">
+                <label for="file-cv-upload">
+                    <span class="glyphicon glyphicon-upload"></span>Carica CV
+                </label>
+                <input type="file" id="file-cv-upload" files-input ng-model="cvFile" ng-change="$ctrl.uploadCv(cvFile)" accept=".pdf,.doc,.docx" style="display: none;">
+            </button>
         </div>
     </div>
-
 </div>
+

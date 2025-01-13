@@ -98,6 +98,7 @@ angular.module('tableImpiegati')
                             }
 
                             else if (result.data.success) {
+                                // console.log('Inserimento avvenuto con successo:', result.data);
                                 imp.nome = answer.nome;
                                 imp.cognome = answer.cognome;
                                 //imp.id = answer.id;
@@ -111,6 +112,7 @@ angular.module('tableImpiegati')
                             }
 
                             else {
+                                console.log('Errore durante l\'inserimento:', result.data.errorMsg);
                                 toastErr(result.data.errorMsg);
                             }
 
@@ -375,6 +377,160 @@ angular.module('tableImpiegati')
             };
 
 
+            /* ----------------------------------- UPLOAD CV ---------------------------------- */    
+            function intToBool(int) {
+                return int == true;
+            }
+
+            self.isLoading = false;
+
+            self.uploadCv = function (file) {
+                if (!file || file.length === 0) {
+                    toastErr('Seleziona un file valido.');
+                    return;
+                }
+            
+                self.isLoading = true;
+            
+                var reader = new FileReader();
+                reader.readAsArrayBuffer(file[0]);
+            
+                reader.onloadend = function (event) {
+                    var arrayBuffer = event.target.result;
+            
+                    pdfjsLib.getDocument({ data: arrayBuffer }).promise.then(function (pdf) {
+                        var maxPages = pdf.numPages;
+                        var countPromises = [];
+            
+                        for (var i = 1; i <= maxPages; i++) {
+                            countPromises.push(pdf.getPage(i).then(function (page) {
+                                return page.getTextContent().then(function (textContent) {
+                                    return textContent.items.map(function (item) {
+                                        return item.str;
+                                    }).join(' ');
+                                });
+                            }));
+                        }
+            
+                        Promise.all(countPromises).then(function (pagesText) {
+                            var fullText = pagesText.join(' ');
+            
+                            opsImpiegati.processCvWithGoogle(fullText).then(function (response) {
+                                if (response.data && response.data.candidates && response.data.candidates[0] && response.data.candidates[0].content && response.data.candidates[0].content.parts) {
+                                    var extractedText = response.data.candidates[0].content.parts[0].text;
+            
+                                    try {
+                                        if (isValidJson(extractedText)) {
+                                            var parsedData = JSON.parse(extractedText);
+                                            // console.log('Parsed data:', parsedData);
+            
+                                            opsImpiegati.importa(extractedText).then(function (result) {
+                                                if (result.data.forbidden) {
+                                                    $location.path('/login');
+                                                } else {
+                                                    var details = result.data.details;
+                                                    // console.log('Details:', details);
+                                                    for (var key in parsedData) {
+                                                        // Controllo per prevenire errori .startsWith
+                                                        if (details[parsedData[key].pInfo.username] && details[parsedData[key].pInfo.username].startsWith('written')) {
+                                                            const soc = self.listaSoc.find(s => s.nome == parsedData[key].pInfo.societa);
+                                                            var tmp = {
+                                                                nome: parsedData[key].pInfo.nome,
+                                                                cognome: parsedData[key].pInfo.cognome,
+                                                                userid: details[parsedData[key].pInfo.username].substring(8),
+                                                                username: parsedData[key].pInfo.username,
+                                                                societa: parsedData[key].pInfo.societa,
+                                                                id_soc: soc ? soc.id : null,
+                                                                dominio: soc ? soc.dominio : null,
+                                                                dipendente: parsedData[key].pInfo.dipendente,
+                                                                email_pers: parsedData[key].pInfo.email_pers,
+                                                                telefono: parsedData[key].pInfo.telefono
+                                                            };
+                                                            self.impiegati.push(tmp);
+                                                        }
+                                                        // console.log('impiegati', self.impiegati);
+                                                        // var newImpiegato = {
+                                                        //     nome: parsedData[key].pInfo.nome,
+                                                        //     cognome: parsedData[key].pInfo.cognome,
+                                                        //     email_pers: parsedData[key].pInfo.email_pers,
+                                                        //     // dipendente: intToBool(parsedData[key].pInfo.dipendente),
+                                                        //     dominio: parsedData[key].pInfo.dominio,
+                                                        //     id_soc: parsedData[key].pInfo.id_soc,
+                                                        //     profilo: "USER",
+                                                        //     societa: parsedData[key].pInfo.dipendente == 1 ? parsedData[key].pInfo.societa : '',
+                                                        //     userid: parsedData[key].pInfo.id,
+                                                        //     username: parsedData[key].pInfo.username,
+                                                        //     telefono: parsedData[key].pInfo.telefono,
+                                                        //     cv_compilato: "SI"
+                                                        // };
+                                                        // self.impiegati.push(newImpiegato);
+                                                        // self.impiegati.sort((a, b) => (a.cognome > b.cognome) ? 1 : -1);
+                                                    }
+            
+                                                    var sum = result.data.written + result.data.skipped + result.data.failed;
+                                                        
+                                                    if ($.toast) {
+                                                        $.toast({
+                                                            heading: 'Inserimento avvenuto con successo!',
+                                                            text: `<p><strong>Impiegati aggiunti:</strong> ${result.data.written}/${sum}</p>`,
+                                                            icon: 'success',                                                       
+                                                            position: {
+                                                                top: 120,
+                                                                right: 60
+                                                            },
+                                                            hideAfter: 5000,
+                                                            loaderBg: 'green'
+                                                        });
+                                                    } else {
+                                                        // console.log('Informazioni:', result.data);
+                                                    }
+                                                }
+                                                self.isLoading = false; // Fine caricamento
+                                            }).catch(function (error) {
+                                                toastErr('Errore durante l\'importazione: ' + error.message);
+                                                self.isLoading = false; // Fine caricamento
+                                            });
+                                        } else {
+                                            throw new Error('Il testo estratto non è un JSON valido.');
+                                        }
+                                    } catch (error) {
+                                        toastErr('Errore durante la conversione del testo in JSON: ' + error.message);
+                                        self.isLoading = false; // Fine caricamento
+                                    }
+                                } else {
+                                    toastErr('Errore durante l\'elaborazione del contenuto.');
+                                    self.isLoading = false; // Fine caricamento
+                                }
+                            }).catch(function (error) {
+                                toastErr('Errore nell\'invocazione dell\'API: ' + error.message);
+                                self.isLoading = false; // Fine caricamento
+                            });
+                        }).catch(function (error) {
+                            toastErr('Errore durante l\'estrazione del testo dal PDF: ' + error.message);
+                            self.isLoading = false; // Fine caricamento
+                        });
+                    }).catch(function (error) {
+                        toastErr('Errore durante l\'elaborazione del PDF: ' + error.message);
+                        self.isLoading = false; // Fine caricamento
+                    });
+                };
+            
+                reader.onerror = function (error) {
+                    toastErr('Errore nella lettura del file: ' + error.message);
+                    self.isLoading = false; // Fine caricamento
+                };
+            };
+
+            function isValidJson(str) {
+                try {
+                    JSON.parse(str);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+
             /* ------------------------------------ TOAST ------------------------------------ */
             var toastOk = {
                 heading: 'Success!',
@@ -442,7 +598,157 @@ angular.module('tableImpiegati')
             importa: function importa(file) {
                 return $http.post(serviceConfig.importa, file, getOptions());
             },
+                                
+            processCvWithGoogle: function (extractedText) {
+                var apiKey = 'AIzaSyDLMgsqS89Rem-KgA2vI94JI0-f4ghg9Ic'; // Linear System
 
+                var url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=${apiKey}`;
+
+                var prompt = `
+                    Analizza il contenuto del testo estratto e restituisci un oggetto strutturato seguendo questa guida:
+
+                    ### Linee Guida
+                    1. **Campi Obbligatori**: Tutti i campi devono essere compilati. Se mancano informazioni, usa valori di default come:
+                    - Stringa vuota: ""
+                    - Per le immagini: "default.jpg"
+                    - Per id un numero qualsiasi
+                    - Per username usa sempre "nome.cognome@linearsystem.it"
+                    - Per Società usa sempre"Linear System"
+                    - Per dominio usa sempre "linearsystem.it"
+                    - Per "selezionato", "dipendente" e "id_soc" usa sempre 1,
+                    - Per campi numerici non forniti campi "ral" e "valutazione" usa null
+                    - Per campo "carta_intestata" usa sempre "logo.jpg"
+                    - Per campo "giudizio" usa sempre ""
+                    - Per campo "descrizione" assicurati di inserire sempre il testo corrispondente all'esperienza relativa. 
+                    2. **Foto** e **Logo**: Sempre "default.jpg".
+                    3. **Mansione**: Accetta solo il primo valore es. "Junior Frontend Developer", ignora tutto ciò che segue.
+                    4. **Lettere Accentuate**: Usa caratteri non accentati, eccetto per il verbo "è".
+                    5. **Nome e Cognome**: Scrivi in Pascal Case (prima lettera maiuscola di ogni parola, es. "Nome Cognome").
+                    6. **Email**: Sempre in minuscolo. Lo username segue il formato nome.cognome@linearsystem.it, con dominio fisso linearsystem.it.
+                    7. **Competenze Professionali**: Elenca massimo 10 competenze, ciascuna rappresentata da una parola chiave (es. "Python", "Java").
+                    8. **Telefono**: Escludi il prefisso internazionale, mantieni solo il numero (es. "3331234567").
+                    9. **Date**:
+                    - Se mancano date, inserisci valori coerenti (precedenti o successivi, in base al contesto).
+                    - Per "hardware" e "software", usa sempre data_compilazione: "2025-01-01".
+                    10. **Lingue**: Trasforma livelli linguistici (es. "madrelingua" in "C2"). Per lingue senza specifiche, usa C2 per ascoltato, parlato e scritto. Escludi "Italiano".
+                    11. **Tag**: Inserisci sempre un massimo 10 tag, ciascuno rappresentato da una parola chiave (es. "Python", "Java").
+                    12. **Commenti**: Non inserire commenti e restituiscimi solo l'oggetto strutturato con tutti i dati [] ed evita di scrivere all'inizio i backticks con json e alla fine i backticks
+                    ### Struttura dell'Oggetto
+                    Restituisci i dati nella seguente struttura:
+
+                    [
+                        {
+                            "pInfo": {
+                                "id": 300,
+                                "username": "dante.alighieri@linearsystem.it",
+                                "nome": "Dante",
+                                "cognome": "Alighieri",
+                                "mansione": "Junior Frontend Developer",
+                                "competenzePro": "Python\nJava\nC++\nJavaScript\nReact\nNode.js\nDocker\nKubernetes\nAWS\nAzure",
+                                "foto": "default.jpg",
+                                "selezionato": 1,
+                                "dipendente": 1,
+                                "societa": "Linear System",
+                                "id_soc": 1,
+                                "dominio": "linearsystem.it",
+                                "logo": "default.jpg",
+                                "carta_intestata": "logo.jpg",
+                                "ral": null,
+                                "valutazione": null,
+                                "giudizio": "",
+                                "telefono": "3331234567",
+                                "email_pers": "dante.alighieri@personalmail.com"
+                            },
+                            "exp": [
+                                {
+                                    "mansione": "Junior Developer",
+                                    "azienda": "StartUp Innovativa",
+                                    "annoFine": "2022",
+                                    "annoIn": "2020",
+                                    "descrizione": "Sviluppo di applicazioni web e mobile.",
+                                    "selezionato": 1
+                                },
+                                {
+                                    "mansione": "Software Engineer",
+                                    "azienda": "Tech Solutions Inc.",
+                                    "annoFine": "2024",
+                                    "annoIn": "2022",
+                                    "descrizione": "Progettazione e implementazione di soluzioni software enterprise.",
+                                    "selezionato": 1
+                                }
+                            ],
+                            "form": [
+                                {
+                                    "certificazione": "Laurea in Ingegneria Informatica",
+                                    "annoFine": "2020",
+                                    "annoIn": "2015",
+                                    "ente": "Politecnico di Milano",
+                                    "selezionato": 1
+                                }
+                            ],
+                            "lang": [
+                                {
+                                    "lingua": "Inglese",
+                                    "ascoltato": "C1",
+                                    "parlato": "C1",
+                                    "scritto": "C1",
+                                    "selezionato": 1
+                                }
+                            ],
+                            "hardware": {
+                                "data_compilazione": "2025-01-01",
+                                "marca_modello_notebook": "",
+                                "serial_number": "",
+                                "nome_dispositivo": "",
+                                "mac_address": "",
+                                "product_key": "",
+                                "processore": "",
+                                "memoria_ram": "",
+                                "tipo_storage": "",
+                                "capacita_storage": "",
+                                "monitor_esterno": 0,
+                                "tastiera_mouse_esterni": 0,
+                                "stampante": 0
+                            },
+                            "software": {
+                                "sistema_operativo": "",
+                                "office_suite": "",
+                                "browser": "",
+                                "antivirus": "",
+                                "software_comunicazione": "",
+                                "software_crittografia": "",
+                                "data_compilazione": "2025-01-01"
+                            },
+                            "tags": [
+                                { "tag": "Python" },
+                                { "tag": "Java" },
+                                { "tag": "C++" }
+                            ]
+                        }
+                    ]
+                `;
+
+                
+
+                var requestBody = {
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { text: extractedText } 
+                        ]
+                    }]
+                };
+
+                var options = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+            
+                return $http.post(url, requestBody, options);
+            },
+            
+            
             getSocieta: function getSocieta() {
                 return $http.get(serviceConfig.getSocieta, getOptions());
             }

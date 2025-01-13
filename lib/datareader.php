@@ -174,56 +174,34 @@ class DataReader
             $stmt = $db->prepare("SELECT tag, COUNT(tag) AS c 
                                    FROM tags $condition 
                                    GROUP BY tag 
-                                   HAVING c > 1 
-                                   ORDER BY 2 DESC, 1 ASC");
+                                   ORDER BY c DESC");
             if (!empty($params)) {
                 $stmt->bind_param(str_repeat('s', count($params)), ...$params);
             }
             $stmt->execute();
             $result = $stmt->get_result();
+    
+            $othersCount = 0; // Contatore per i record vuoti
             while ($row = $result->fetch_array(MYSQLI_NUM)) {
-                array_push($dataset, new Tag($row[0], ($row[1] / $tags) * 100, $row[1]));
-            }
-            $stmt->close();
-    
-            // Calcolo degli "altri"
-            if (empty($dataset)) {
-                $sql = "SELECT tag, COUNT(tag) AS c 
-                        FROM tags $condition 
-                        GROUP BY tag";
-            } else {
-                $sql = "SELECT SUM(c) 
-                        FROM (
-                            SELECT tag, COUNT(tag) AS c 
-                            FROM tags $condition 
-                            GROUP BY tag 
-                            HAVING c = 1
-                        ) t";
-            }
-    
-            $stmt = $db->prepare($sql);
-            if (!empty($params)) {
-                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
-            }
-            $stmt->execute();
-            $result = $stmt->get_result();
-    
-            if (empty($dataset)) {
-                while ($row = $result->fetch_array(MYSQLI_NUM)) {
-                    array_push($dataset, new Tag($row[0], ($row[1] / $tags) * 100, $row[1]));
+                if (strlen($row[0]) === 0) { // Controlla se la lunghezza di $row[0] è 0
+                    $othersCount += $row[1]; // Somma i conteggi dei record vuoti
+                } else {
+                    array_push($dataset, new Stats($row[0], ($row[1] / $tags) * 100, $row[1]));
                 }
-            } else {
-                $others = intval($result->fetch_array(MYSQLI_NUM)[0]);
-                array_push($dataset, new Tag('Altri', ($others / $tags) * 100, $others));
             }
             $stmt->close();
+    
+            // Aggiungi la logica per aggregare i record vuoti
+            if ($othersCount > 0) {
+                array_push($dataset, new Stats('Altri', ($othersCount / $tags) * 100, $othersCount));
+            }
         }
     
         $db->close();
         return array('data' => $dataset, 'imp' => $imp);
     }
     
-
+    
     public function softwareStats($societa, $dipendente, $colonna) {
         // Convalida il parametro colonna
         $colonnaValida = in_array($colonna, [
@@ -273,46 +251,27 @@ class DataReader
             $stmt = $db->prepare("SELECT $colonnaValida, COUNT($colonnaValida) AS c 
                                    FROM software $condition 
                                    GROUP BY $colonnaValida 
-                                   HAVING c > 1 
-                                   ORDER BY 2 DESC, 1 ASC");
+                                   ORDER BY c DESC");
             if (!empty($params)) {
                 $stmt->bind_param(str_repeat('s', count($params)), ...$params);
             }
             $stmt->execute();
             $result = $stmt->get_result();
+    
+            $othersCount = 0; // Contatore per i record vuoti
             while ($row = $result->fetch_array(MYSQLI_NUM)) {
-                array_push($dataset, new Stats($row[0], ($row[1] / $software) * 100, $row[1]));
+                if (strlen($row[0]) === 0) { // Controlla se la lunghezza di $row[0] è 0
+                    $othersCount += $row[1]; // Somma i conteggi dei record vuoti
+                } else {
+                    array_push($dataset, new Stats($row[0], ($row[1] / $software) * 100, $row[1]));
+                }
             }
             $stmt->close();
     
-            // Calcolo degli "altri"
-            if (empty($dataset)) {
-                $sql = "SELECT $colonnaValida, COUNT($colonnaValida) AS c 
-                        FROM software $condition 
-                        GROUP BY $colonnaValida";
-            } else {
-                $sql = "SELECT SUM(c) FROM (
-                            SELECT $colonnaValida, COUNT($colonnaValida) AS c 
-                            FROM software $condition 
-                            GROUP BY $colonnaValida 
-                            HAVING c = 1
-                        ) t";
+            // Aggiungi la logica per aggregare i record vuoti
+            if ($othersCount > 0) {
+                array_push($dataset, new Stats('Altro', ($othersCount / $software) * 100, $othersCount));
             }
-            $stmt = $db->prepare($sql);
-            if (!empty($params)) {
-                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
-            }
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if (empty($dataset)) {
-                while ($row = $result->fetch_array(MYSQLI_NUM)) {
-                    array_push($dataset, new Stats($row[0], ($row[1] / $software) * 100, $row[1]));
-                }
-            } else {
-                $others = intval($result->fetch_array(MYSQLI_NUM)[0]);
-                array_push($dataset, new Stats('Altro', ($others / $software) * 100, $others));
-            }
-            $stmt->close();
         }
     
         $db->close();
@@ -375,46 +334,27 @@ class DataReader
             $stmt = $db->prepare("SELECT $colonnaValida, COUNT($colonnaValida) AS c 
                                    FROM hardware $condition 
                                    GROUP BY $colonnaValida 
-                                   HAVING c > 1 
-                                   ORDER BY 2 DESC, 1 ASC");
+                                   ORDER BY c DESC");
             if (!empty($params)) {
                 $stmt->bind_param(str_repeat('s', count($params)), ...$params);
             }
             $stmt->execute();
             $result = $stmt->get_result();
+    
+            $othersCount = 0; // Contatore per i record vuoti
             while ($row = $result->fetch_array(MYSQLI_NUM)) {
-                array_push($dataset, new Stats($row[0], ($row[1] / $hardware) * 100, $row[1]));
+                if (strlen($row[0]) === 0) { // Controlla se la lunghezza di $row[0] è 0
+                    $othersCount += $row[1]; // Somma i conteggi dei record vuoti
+                } else {
+                    array_push($dataset, new Stats($row[0], ($row[1] / $hardware) * 100, $row[1]));
+                }
             }
             $stmt->close();
     
-            // Calcolo degli "altri"
-            if (empty($dataset)) {
-                $sql = "SELECT $colonnaValida, COUNT($colonnaValida) AS c 
-                        FROM hardware $condition 
-                        GROUP BY $colonnaValida";
-            } else {
-                $sql = "SELECT SUM(c) FROM (
-                            SELECT $colonnaValida, COUNT($colonnaValida) AS c 
-                            FROM hardware $condition 
-                            GROUP BY $colonnaValida 
-                            HAVING c = 1
-                        ) t";
+            // Aggiungi la logica per aggregare i record vuoti
+            if ($othersCount > 0) {
+                array_push($dataset, new Stats('Altro', ($othersCount / $hardware) * 100, $othersCount));
             }
-            $stmt = $db->prepare($sql);
-            if (!empty($params)) {
-                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
-            }
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if (empty($dataset)) {
-                while ($row = $result->fetch_array(MYSQLI_NUM)) {
-                    array_push($dataset, new Stats($row[0], ($row[1] / $hardware) * 100, $row[1]));
-                }
-            } else {
-                $others = intval($result->fetch_array(MYSQLI_NUM)[0]);
-                array_push($dataset, new Stats('Altro', ($others / $hardware) * 100, $others));
-            }
-            $stmt->close();
         }
     
         $db->close();
