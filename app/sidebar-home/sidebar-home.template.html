@@ -1,19 +1,43 @@
 <div class="sidebar">
     <nav id="spy">
         <ul class="sidebar-nav nav nav-pills nav-stacked">
-            <li>
+            <li ui-sref-active="active">
                 <a id="tabImp" ui-sref="logout.sidebarHome.impiegati">Tabella Impiegati</a>
             </li>
             <li>
-                <a id="tabStats" ui-sref="logout.sidebarHome.stats">Statistiche</a>
+                <a id="tabStats" ng-click="$ctrl.toggleSubmenu('stats')">Statistiche</a>
+                <ul class="nav nav-pills nav-stacked submenu" ng-show="$ctrl.activeSubmenu === 'stats'">
+                    <li ui-sref-active="active">
+                        <a ui-sref="logout.sidebarHome.hardwareStats">Hardware</a>
+                    </li>
+                    <li ui-sref-active="active">
+                        <a ui-sref="logout.sidebarHome.softwareStats">Software</a>
+                    </li>
+                    <li ui-sref-active="active">
+                        <a ui-sref="logout.sidebarHome.tagStats">Tag</a>
+                    </li>
+                </ul>
             </li>
             <li>
+                <a id="tabReports" ng-click="$ctrl.toggleSubmenu('reports')">Reports</a>
+                <ul class="nav nav-pills nav-stacked submenu" ng-show="$ctrl.activeSubmenu === 'reports'">
+                    <li ui-sref-active="active">
+                        <a ui-sref="logout.sidebarHome.hardwareReports">Hardware</a>
+                    </li>
+                    <!-- <li ui-sref-active="active">
+                        <a ui-sref="logout.sidebarHome.softwareReports">Software</a>
+                    </li>
+                    <li ui-sref-active="active">
+                        <a ui-sref="logout.sidebarHome.tagReports">Tag</a>
+                    </li> -->
+                </ul>
+            </li>
+            <li ui-sref-active="active">
                 <a id="tabTag" ui-sref="logout.sidebarHome.tag">Ricerca Tag</a>
             </li>
-            <li ng-if="$ctrl.societa">
+            <li ui-sref-active="active" ng-if="$ctrl.societa">
                 <a id="tabSocieta" ui-sref="logout.sidebarHome.societa">Società</a>
             </li>
         </ul>
     </nav>
 </div>
-

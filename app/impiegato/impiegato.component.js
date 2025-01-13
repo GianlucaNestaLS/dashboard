@@ -31,28 +31,17 @@ angular.module('impiegato')
                     result.data.forbidden ? $location.path('/login') : self.all_tags = result.data;
                 });
 
-                /* ------------------------------------ TASTO SALVA ------------------------------------ */
-                // $scope.$on('salva', function (event, args) {
-                //     const email_pers = checkEmailPers();
-                //     const lingue = checkLingue();
-                //     if (email_pers && lingue) {
-                //         impiegatoOp.salvaDati(datiPagina()).then(function (result) {
-                //             console.log('impiegatoOp.salvaDati', result);
-                //             if (result.data.forbidden) {
-                //                 $location.path('/login');
-                //             } else if (result.data.success) {
-                //                 toastOk.text = 'Salvataggio dati avvenuto con successo.';
-                //                 $.toast(toastOk);
-                //             } else {
-                //                 toastErr(result.data.errorMsg);
-                //             }
-                //         });
-                //     } else {
-                //         if (!email_pers) toastErr('Formato e-mail non valido!');
-                //         if (!lingue) toastErr('Campi lingua non valorizzati!');
-                //     }
-                // });
+                /* ------------------------------------ INPUT MAC ADDRESS ------------------------------------ */
 
+                self.formatMacAddress = function () {
+                    if (self.hardware.mac_address) {
+                        var cleanValue = self.hardware.mac_address.replace(/[^A-Fa-f0-9]/g, '').toUpperCase();
+                        var formattedValue = cleanValue.match(/.{1,2}/g)?.join('-') || '';
+                        self.hardware.mac_address = formattedValue.slice(0, 17);
+                    }
+                };              
+
+                /* ------------------------------------ TASTO SALVA ------------------------------------ */
                 $scope.$on('salva', function (event, args) {
                     const email_pers = checkEmailPers();
                     const lingue = checkLingue();
@@ -60,18 +49,21 @@ angular.module('impiegato')
                         const dati = datiPagina();
 
                         const datiHardware = getDatiHardware();
-                        console.log('Dati combinati per il salvataggio:', dati);
+                        // console.log('Dati combinati per il salvataggio:', dati);
                 
                         dati.hardware = datiHardware;
 
-                        if (!dati.hardware.memoria_ram) dati.hardware.memoria_ram = "";
-                        if (!dati.hardware.tipo_storage) dati.hardware.tipo_storage = "";
-                        if (!dati.hardware.capacita_storage) dati.hardware.capacita_storage = "";
+                        // if (!dati.hardware.memoria_ram) dati.hardware.memoria_ram = "";
+                        // if (!dati.hardware.tipo_storage) dati.hardware.tipo_storage = "";
+                        // if (!dati.hardware.capacita_storage) dati.hardware.capacita_storage = "";
                         if (dati.hardware.monitor_esterno === undefined || dati.hardware.monitor_esterno === null) {
                             dati.hardware.monitor_esterno = 0;
                         }
                         if (dati.hardware.tastiera_mouse_esterni === undefined || dati.hardware.tastiera_mouse_esterni === null) {
                             dati.hardware.tastiera_mouse_esterni = 0;
+                        }
+                        if (dati.hardware.stampante === undefined || dati.hardware.stampante === null) {
+                            dati.hardware.stampante = 0;
                         }
                         
                         if (dati.hardware && dati.hardware.data_compilazione) {
@@ -88,8 +80,31 @@ angular.module('impiegato')
                         dati.hardware.tastiera_mouse_esterni = boolToInt(dati.hardware.tastiera_mouse_esterni);
                         dati.hardware.stampante = boolToInt(dati.hardware.stampante);
 
+                        const datiSoftware = getDatiSoftware();
+
+                        dati.software = datiSoftware;
+
+                        dati.software.data_compilazione = dati.hardware.data_compilazione;
+
+                        // if(!dati.software.sistema_operativo) dati.software.sistema_operativo = "";
+                        // if(!dati.software.office_suite) dati.software.office_suite = "";
+                        // if(!dati.software.browser) dati.software.browser = "";
+                        // if(!dati.software.antivirus) dati.software.antivirus = "";
+                        // if(!dati.software.software_comunicazione) dati.software.software_comunicazione = "";
+                        // if(!dati.software.software_crittografia) dati.software.software_crittografia = "";
+
+                        if (!isHardwareValid(datiHardware)) {
+                            toastErr('Tutti i campi Hardware devono essere compilati!');
+                            return;
+                        }
+
+
+                        if (!isSoftwareValid(datiSoftware)) {
+                            toastErr('Tutti i campi Software devono essere compilati!');
+                            return;
+                        }
+
                         impiegatoOp.salvaDati(dati).then(function (result) {
-                            console.log('impiegatoOp.salvaDati', result);
                             if (result.data.forbidden) {
                                 $location.path('/login');
                             } else if (result.data.success) {
@@ -111,6 +126,8 @@ angular.module('impiegato')
                         data_compilazione: self.hardware.data_compilazione,
                         marca_modello_notebook: self.hardware.marca_modello_notebook,
                         serial_number: self.hardware.serial_number,
+                        nome_dispositivo: self.hardware.nome_dispositivo,
+                        mac_address: self.hardware.mac_address,
                         product_key: self.hardware.product_key,
                         processore: self.hardware.processore,
                         memoria_ram: self.hardware.memoria_ram,
@@ -121,18 +138,50 @@ angular.module('impiegato')
                         stampante: self.hardware.stampante
                     };
 
-                    console.log('Dati Hardware da inviare:', datiHardware);
+                    // console.log('Dati Hardware da inviare:', datiHardware);
 
                     // Aggiorna dataImp.hardware
                     dataImp.hardware = datiHardware;
 
-                    console.log('Dati Hardware aggiornati:', dataImp.hardware);
+                    // console.log('Dati Hardware aggiornati:', dataImp.hardware);
 
                     return datiHardware;
                 }
 
-                function boolToInt(bb) {
-                    return (bb ? 1 : 0);
+                function getDatiSoftware() {
+                    const datiSoftware = {
+                        sistema_operativo: self.software.sistema_operativo,
+                        office_suite: self.software.office_suite,
+                        browser: self.software.browser,
+                        antivirus: self.software.antivirus,
+                        software_comunicazione: self.software.software_comunicazione,
+                        software_crittografia: self.software.software_crittografia
+                    };
+
+                    dataImp.software = datiSoftware;
+
+                    return datiSoftware;
+                }
+
+                function isHardwareValid(hardware) {
+                    return hardware.marca_modello_notebook &&
+                        hardware.serial_number &&
+                        hardware.nome_dispositivo &&
+                        hardware.mac_address &&
+                        hardware.product_key &&
+                        hardware.processore &&
+                        hardware.memoria_ram &&
+                        hardware.tipo_storage &&
+                        hardware.capacita_storage;
+                }
+                
+                function isSoftwareValid(software) {
+                    return software.sistema_operativo &&
+                        software.office_suite &&
+                        software.browser &&
+                        software.antivirus &&
+                        software.software_comunicazione &&
+                        software.software_crittografia;
                 }
 
                 function checkEmailPers() {
@@ -149,25 +198,145 @@ angular.module('impiegato')
                     return ret;
                 }
 
-                /* ------------------------------------ TASTO HOME ------------------------------------ */
+                /* ------------------------------------ TASTO HOME ------------------------------------ */                     
                 $scope.$on('backHome', function (event, args) {
+                    const datiHardware = getDatiHardware();
+                
+                    if (typeof datiPagina === 'function') {
+                        let updatedDatiPagina = datiPagina();
+                        updatedDatiPagina.hardware = { ...datiHardware };
 
+                        // Converti a numeri i valori booleani per monitor_esterno, tastiera_mouse_esterni e stampante
+                        updatedDatiPagina.hardware.monitor_esterno = boolToInt(datiHardware.monitor_esterno);
+                        updatedDatiPagina.hardware.tastiera_mouse_esterni = boolToInt(datiHardware.tastiera_mouse_esterni);
+                        updatedDatiPagina.hardware.stampante = boolToInt(datiHardware.stampante);
+                
+                        // Aggiorna l'oggetto datiPagina()
+                        datiPagina = function() { return updatedDatiPagina };
+                    }
+                
+                    // Funzione per formattare la data come YYYY-MM-DD
+                    function formatDateToYYYYMMDD(date) {
+                        if (!(date instanceof Date)) return date;
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
+                
+                    // Funzione per normalizzare le date
+                    function normalizeDates(obj) {
+                        if (typeof obj !== 'object' || obj === null) return obj;
+                
+                        for (const key in obj) {
+                            if (obj.hasOwnProperty(key)) {
+                                if (obj[key] instanceof Date) {
+                                    obj[key] = formatDateToYYYYMMDD(obj[key]);
+                                } else if (typeof obj[key] === 'object') {
+                                    obj[key] = normalizeDates(obj[key]);
+                                }
+                            }
+                        }
+                        return obj;
+                    }
+                
+                    // Funzione per ordinare le chiavi di un oggetto
+                    function sortObjectKeys(obj) {
+                        if (typeof obj !== 'object' || obj === null) return obj;
+                
+                        const sortedObj = {};
+                        Object.keys(obj).sort().forEach(function (key) {
+                            sortedObj[key] = obj[key];
+                        });
+                
+                        for (const key in sortedObj) {
+                            if (sortedObj.hasOwnProperty(key)) {
+                                sortedObj[key] = sortObjectKeys(sortedObj[key]); // Ordina anche gli oggetti contenuti
+                            }
+                        }
+                
+                        return sortedObj;
+                    }
+                
+                    // Funzione per trovare le differenze tra due oggetti
+                    function findDifferences(obj1, obj2) {
+                        const diff = {};
+                        for (const key in obj1) {
+                            if (obj1.hasOwnProperty(key)) {
+                                if (obj2.hasOwnProperty(key)) {
+                                    if (!_.isEqual(obj1[key], obj2[key])) {
+                                        diff[key] = { obj1: obj1[key], obj2: obj2[key] };
+                                    }
+                                } else {
+                                    diff[key] = { obj1: obj1[key], obj2: 'Key missing in second object' };
+                                }
+                            }
+                        }
+                
+                        // Controllo per le chiavi che sono in obj2 ma non in obj1
+                        for (const key in obj2) {
+                            if (obj2.hasOwnProperty(key) && !obj1.hasOwnProperty(key)) {
+                                diff[key] = { obj1: 'Key missing in first object', obj2: obj2[key] };
+                            }
+                        }
+                        return diff;
+                    }
+                
+                    // Verifica manuale di hardware per forzare il confronto
+                    function checkHardwareChanges() {
+                        const currentHardware = datiPagina().hardware;  // Assicurati che datiPagina().hardware venga aggiornato correttamente
+                        // console.log("Controllo hardware:", currentHardware);
+                
+                        // Confronta i dati dell'hardware attuale con quelli precedenti
+                        if (JSON.stringify(currentHardware) !== JSON.stringify(self.hardware)) {
+                            // console.log('Hardware modificato:', currentHardware);
+                            return true;
+                        }
+                        return false;
+                    }
+                
                     impiegatoOp.getDataFromDB(id).then(function (result) {
                         if (result.data.forbidden) {
                             $location.path('/login');
                         } else {
-                            var md5DB = md5.createHash(JSON.stringify(result.data) || '');
-                            var md5Pagina = md5.createHash(JSON.stringify(datiPagina()) || '');
+                            // Normalizzazione e ordinamento dei dati
+                            const datiPaginaNormalized = normalizeDates(datiPagina());
+                            // console.log('datiPagina normalizzato:', datiPaginaNormalized);
+                
+                            const dbDataNormalized = normalizeDates(result.data);
+                            // console.log('result.data normalizzato:', dbDataNormalized);
+                
+                            // Ordinamento delle chiavi prima di fare JSON.stringify
+                            const sortedDBData = sortObjectKeys(dbDataNormalized);
+                            const sortedDatiPagina = sortObjectKeys(datiPaginaNormalized);
+                
+                            // Confronto specifico per 'hardware' e controllo forzato
+                            if (checkHardwareChanges()) {
+                                // console.log('Differenze in hardware rilevate!');
+                            }
+                
+                            // Calcolo degli hash
+                            const md5DB = md5.createHash(JSON.stringify(sortedDBData) || '');
+                            // console.log('md5DB', md5DB);
+                
+                            const md5Pagina = md5.createHash(JSON.stringify(sortedDatiPagina) || '');
+                            // console.log('md5Pagina', md5Pagina);
+                
+                            // Confronto degli hash
                             if (md5DB === md5Pagina) {
                                 $location.path('/impiegati');
                             } else {
+                                // Trova e logga le differenze tra gli oggetti
+                                const differences = findDifferences(sortedDBData, sortedDatiPagina);
+                                // console.log('Differenze tra gli oggetti:', differences);
+                
+                                // console.log('I dati non corrispondono, richiamo saveDialog.');
                                 saveDialog(event);
                             }
                         }
                     });
-
                 });
-
+                
                 /* ------------------------------------ SAVE DIALOG ------------------------------------ */
                 function saveDialog(ev) {
                     $mdDialog.show({
@@ -183,7 +352,68 @@ angular.module('impiegato')
                                 const email_pers = checkEmailPers();
                                 const lingue = checkLingue();
                                 if (email_pers && lingue) {
-                                    impiegatoOp.salvaDati(datiPagina()).then(function (result) {
+                                    const dati = datiPagina();  // Ottieni i dati dalla pagina
+                                    
+                                    // Aggiungi la logica per preparare e normalizzare i dati
+                                    const datiHardware = getDatiHardware();
+                                    dati.hardware = datiHardware;
+                
+                                    // Impostare i valori predefiniti per i campi hardware
+                                    // if (!dati.hardware.memoria_ram) dati.hardware.memoria_ram = "";
+                                    // if (!dati.hardware.tipo_storage) dati.hardware.tipo_storage = "";
+                                    // if (!dati.hardware.capacita_storage) dati.hardware.capacita_storage = "";
+                                    if (dati.hardware.monitor_esterno === undefined || dati.hardware.monitor_esterno === null) {
+                                        dati.hardware.monitor_esterno = 0;
+                                    }
+                                    if (dati.hardware.tastiera_mouse_esterni === undefined || dati.hardware.tastiera_mouse_esterni === null) {
+                                        dati.hardware.tastiera_mouse_esterni = 0;
+                                    }
+                                    if (dati.hardware.stampante === undefined || dati.hardware.stampante === null) {
+                                        dati.hardware.stampante = 0;
+                                    }
+                                    
+                                    // Normalizza la data in formato 'YYYY-MM-DD'
+                                    if (dati.hardware && dati.hardware.data_compilazione) {
+                                        var date = new Date(dati.hardware.data_compilazione);
+                                        var year = date.getFullYear();
+                                        var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                                        var day = date.getDate().toString().padStart(2, '0');
+                                        dati.hardware.data_compilazione = `${year}-${month}-${day}`;
+                                    }
+                
+                                    // Converti a numeri i valori booleani per monitor_esterno, tastiera_mouse_esterni e stampante
+                                    dati.hardware.monitor_esterno = boolToInt(dati.hardware.monitor_esterno);
+                                    dati.hardware.tastiera_mouse_esterni = boolToInt(dati.hardware.tastiera_mouse_esterni);
+                                    dati.hardware.stampante = boolToInt(dati.hardware.stampante);
+                
+                                    // Aggiungi i dati software
+                                    const datiSoftware = getDatiSoftware();
+                                    dati.software = datiSoftware;
+                
+                                    // Impostare la data del software uguale a quella dell'hardware
+                                    dati.software.data_compilazione = dati.hardware.data_compilazione;
+                
+                                    // Assicurati che tutti i campi software siano valorizzati correttamente
+                                    // if(!dati.software.sistema_operativo) dati.software.sistema_operativo = "";
+                                    // if(!dati.software.office_suite) dati.software.office_suite = "";
+                                    // if(!dati.software.browser) dati.software.browser = "";
+                                    // if(!dati.software.antivirus) dati.software.antivirus = "";
+                                    // if(!dati.software.software_comunicazione) dati.software.software_comunicazione = "";
+                                    // if(!dati.software.software_crittografia) dati.software.software_crittografia = "";
+
+                                    if (!isHardwareValid(datiHardware)) {
+                                        toastErr('Tutti i campi Hardware devono essere compilati!');
+                                        return;
+                                    }
+            
+            
+                                    if (!isSoftwareValid(datiSoftware)) {
+                                        toastErr('Tutti i campi Software devono essere compilati!');
+                                        return;
+                                    }
+                
+                                    // Salva i dati con il metodo impiegatoOp
+                                    impiegatoOp.salvaDati(dati).then(function (result) {
                                         if (result.data.forbidden) {
                                             $location.path('/login');
                                         } else {
@@ -200,6 +430,7 @@ angular.module('impiegato')
                         }
                     }, function() {});
                 }
+                
 
                 function saveDialogController($scope, $mdDialog) {
                     $scope.hide = function () {
@@ -236,114 +467,70 @@ angular.module('impiegato')
                     self.listLang = dataImp.getDati().listLang;
                     self.years = setYears();
                 }*/
-                
-                function getDatiImpiegato(id) {
-                    impiegatoOp.getDatiImpiegato(id).then(function (result) {
 
-                        if (result.data.forbidden) {
-                            $location.path('/login');
-                        } else {
-                            dataImp.setDati(result.data);
-                
-                            // if (result.data.pInfo) {
-                                self.pInfo = result.data.pInfo;
-                                self.pInfo.dipendente = intToBool(self.pInfo.dipendente);
-                                self.pInfo.selezionato = intToBool(self.pInfo.selezionato);
+                    function getDatiImpiegato(id) {
+                        impiegatoOp.getDatiImpiegato(id).then(function (result) {
+                            if (result.data.forbidden) {
+                                $location.path('/login');
+                            }
+                            else {
+    
+                                dataImp.setDati(result.data);
+    
+                                
+                                self.pInfo = dataImp.getDati().pInfo;
+                                self.pInfo.dipendente = intToBool(dataImp.getDati().pInfo.dipendente);
+                                self.pInfo.selezionato = intToBool(dataImp.getDati().pInfo.selezionato);
                                 $rootScope.title = $state.current.title + self.pInfo.nome + ' ' + self.pInfo.cognome;
-                            // } else {
-                            //     console.error('pInfo is null or undefined');
-                            // }
-                            self.exp = dataImp.getDati().exp;
-                            self.exp.forEach(function (element) {
-                                element.selezionato = intToBool(element.selezionato);
-                            }, this);
-                
-                            self.form = dataImp.getDati().form;
-                            self.form.forEach(function (element) {
-                                element.selezionato = intToBool(element.selezionato);
-                            }, this);
-                
-                            self.lang = dataImp.getDati().lang;
-                            self.lang.forEach(function (element) {
-                                element.selezionato = intToBool(element.selezionato);
-                            }, this);
-                
-                            self.tags = dataImp.getDati().tags;
-                            self.listLvl = dataImp.getDati().listLvl;
-                            self.listLang = dataImp.getDati().listLang;
-                            self.years = setYears();
-
-                            self.hardware = dataImp.getDati().hardware;
-                            self.software = dataImp.getDati().software;
-
-                            if (self.hardware && self.hardware.data_compilazione) {
-                                var [year, month] = self.hardware.data_compilazione.split('-');
-                                self.hardware = angular.copy(self.hardware);
-                                self.hardware.data_compilazione = new Date(year, month - 1, 1);
-                                dataImp.getDati().hardware.data_compilazione = self.hardware.data_compilazione;
+    
+                                //dataImp.setFoto(dataImp.getPath() + '/' + dataImp.getDati().pInfo.foto);// + '.jpg');
+                                //self.foto = dataImp.getFoto();
+                                self.foto = dataImp.getPath() + '/' + dataImp.getDati().pInfo.foto;
+                                if (dataImp.getDati().pInfo.foto == null) {
+                                    self.foto = dataImp.getPath() + '/' + dataImp.getDati().pInfo.logo;
+                                }
+                                self.exp = dataImp.getDati().exp;
+                                self.exp.forEach(function (element) {
+                                    element.selezionato = intToBool(element.selezionato);
+                                }, this);
+    
+                                self.form = dataImp.getDati().form;
+                                self.form.forEach(function (element) {
+                                    element.selezionato = intToBool(element.selezionato);
+                                }, this);
+    
+                                self.lang = dataImp.getDati().lang;
+                                self.lang.forEach(function (element) {
+                                    element.selezionato = intToBool(element.selezionato);
+                                }, this);
+    
+                                self.tags = dataImp.getDati().tags;
+                                self.listLvl = dataImp.getDati().listLvl;
+                                self.listLang = dataImp.getDati().listLang;
+    
+                                self.years = setYears();
+                                //setLang();
+    
+                                self.hardware = dataImp.getDati().hardware;
+                                self.software = dataImp.getDati().software;
+    
+                                if (self.hardware && self.hardware.data_compilazione) {
+                                    var [year, month] = self.hardware.data_compilazione.split('-');
+                                    self.hardware = angular.copy(self.hardware);
+                                    self.hardware.data_compilazione = new Date(year, month - 1, 1);
+                                    dataImp.getDati().hardware.data_compilazione = self.hardware.data_compilazione;
+                                }
+                                if (self.hardware) {
+                                    self.hardware.monitor_esterno = intToBool(self.hardware.monitor_esterno);
+                                    self.hardware.stampante = intToBool(self.hardware.stampante);
+                                    self.hardware.tastiera_mouse_esterni = intToBool(self.hardware.tastiera_mouse_esterni);
+                                }
                             }
-                            if (self.hardware) {
-                                self.hardware.monitor_esterno = intToBool(self.hardware.monitor_esterno);
-                                self.hardware.stampante = intToBool(self.hardware.stampante);
-                                self.hardware.tastiera_mouse_esterni = intToBool(self.hardware.tastiera_mouse_esterni);
+                            if (self.profilo == 'ALL_USERS' && self.pInfo.id_soc != token.getSocieta()) {
+                                $location.path('/impiegati');
                             }
-                        }
-                
-                        if (self.profilo == 'ALL_USERS' && self.pInfo.id_soc != token.getSocieta()) {
-                            $location.path('/impiegati');
-                        }
-                    });
-                }
-                    
-
-                // function getDatiImpiegato(id) {
-                //     impiegatoOp.getDatiImpiegato(id).then(function (result) {
-                //         if (result.data.forbidden) {
-                //             $location.path('/login');
-                //         }
-                //         else {
-
-                //             dataImp.setDati(result.data);
-
-                //             self.pInfo = dataImp.getDati().pInfo;
-                //             self.pInfo.dipendente = intToBool(dataImp.getDati().pInfo.dipendente);
-                //             self.pInfo.selezionato = intToBool(dataImp.getDati().pInfo.selezionato);
-                //             $rootScope.title = $state.current.title + self.pInfo.nome + ' ' + self.pInfo.cognome;
-
-                //             //dataImp.setFoto(dataImp.getPath() + '/' + dataImp.getDati().pInfo.foto);// + '.jpg');
-                //             //self.foto = dataImp.getFoto();
-                //             self.foto = dataImp.getPath() + '/' + dataImp.getDati().pInfo.foto;
-                //             if (dataImp.getDati().pInfo.foto == null) {
-                //                 self.foto = dataImp.getPath() + '/' + dataImp.getDati().pInfo.logo;
-                //             }
-                //             self.exp = dataImp.getDati().exp;
-                //             self.exp.forEach(function (element) {
-                //                 element.selezionato = intToBool(element.selezionato);
-                //             }, this);
-
-                //             self.form = dataImp.getDati().form;
-                //             self.form.forEach(function (element) {
-                //                 element.selezionato = intToBool(element.selezionato);
-                //             }, this);
-
-                //             self.lang = dataImp.getDati().lang;
-                //             self.lang.forEach(function (element) {
-                //                 element.selezionato = intToBool(element.selezionato);
-                //             }, this);
-
-                //             self.tags = dataImp.getDati().tags;
-                //             self.listLvl = dataImp.getDati().listLvl;
-                //             self.listLang = dataImp.getDati().listLang;
-
-                //             self.years = setYears();
-                //             //setLang();
-                //         }
-                //         if (self.profilo == 'ALL_USERS' && self.pInfo.id_soc != token.getSocieta()) {
-                //             $location.path('/impiegati');
-                //         }
-                //     });
-                // }
-
+                        });
+                    }
 
                 /* ------------------------------------ DIALOG FOTO PROFILO ------------------------------------ */
                 self.changeProfilePic = function (ev) {
@@ -692,11 +879,11 @@ angular.module('impiegato')
                 function intToBool(int) {
                     return int == true;
                 }
-/*
+
                 function boolToInt(bb) {
                     return (bb ? 1 : 0);
                 }
-*/
+
                 function setYears() {
                     var year = new Date().getFullYear();
                     var range = [];
@@ -712,6 +899,40 @@ angular.module('impiegato')
                 } */
 
                 function datiPagina() {
+                    /*
+                    var dati = {};
+
+                    dati.pInfo = angular.copy(self.pInfo);
+                    dati.pInfo.dipendente = boolToInt(dati.pInfo.dipendente);
+                    dati.pInfo.selezionato = boolToInt(dati.pInfo.selezionato);
+
+                    dati.exp = angular.copy(self.exp);
+                    dati.exp.forEach(function (element) {
+                        element.selezionato = boolToInt(element.selezionato);
+                        if (!(element.azienda || element.mansione || element.annoIn || element.annoFine || element.descrizione)) {
+                            dati.exp.splice(dati.exp.indexOf(element), 1);
+                        }
+                    }, this);
+
+                    dati.form = angular.copy(self.form);
+                    dati.form.forEach(function (element) {
+                        element.selezionato = boolToInt(element.selezionato);
+                        if (!(element.ente || element.certificazione || element.annoIn || element.annoFine)) {
+                            dati.form.splice(dati.form.indexOf(element), 1);
+                        }
+                    }, this);
+
+                    dati.lang = angular.copy(self.lang);
+                    dati.lang.forEach(function (element) {
+                        element.selezionato = boolToInt(element.selezionato);
+                        if (!(element.lingua || element.ascoltato || element.parlato || element.scritto)) {
+                            dati.lang.splice(dati.lang.indexOf(element), 1);
+                        }
+                    }, this);
+
+                    dati.tags = angular.copy(self.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
+
+                    return dati;*/
                     return dataImp.getDati(true);
                 }
 

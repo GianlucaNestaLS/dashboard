@@ -1,0 +1,70 @@
+<div id="container" class="container">
+    <div id="header" class="row">
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h1>Reports Hardware</h1>
+        </div>
+    </div>
+
+    <div id="body" class="row">
+        <div class="col-xs-2 col-xs-offset-2" ng-if="$ctrl.profilo == 'ADMINISTRATOR'">
+            <select class="form-control" ng-model="$ctrl.societa" ng-change="$ctrl.getHardwareReports()">
+                <option value="">Tutte le Società</option>
+                <option ng-repeat="soc in $ctrl.listaSoc" value="{{soc.id}}">{{soc.nome}}</option>
+            </select>
+        </div>
+        <div class="col-xs-2" ng-class="{'col-xs-offset-2': $ctrl.profilo == 'ALL_USERS'}">
+            <select class="form-control" ng-model="$ctrl.dipendente" ng-change="$ctrl.getHardwareReports()">
+                <option value="">Tutti gli Impiegati</option>
+                <option value="1">Dipendenti</option>
+                <option value="0">Non Dipendenti</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <select class="form-control" ng-model="$ctrl.colonna" ng-change="$ctrl.getHardwareReports()">
+                    <option value="all">Tutte le Colonne</option>
+                    <option value="nome_dispositivo">Nome Dispositivo</option>
+                    <option value="marca_modello_notebook">Marca/Modello</option>
+                    <option value="serial_number">Serial Number</option>
+                    <option value="product_key">Product Key</option>
+                    <option value="mac_address">MAC Address</option>
+                    <option value="processore">Processore</option>
+                    <option value="memoria_ram">Memoria RAM</option>
+                    <option value="tipo_storage">Tipo Storage</option>
+                    <option value="capacita_storage">Capacità Storage</option>
+                    <option value="monitor_esterno">Monitor Esterno</option>
+                    <option value="tastiera_mouse_esterni">Tastiera/Mouse Esterni</option>
+                    <option value="stampante">Stampante</option>
+                    <option value="data_compilazione">Data Compilazione</option>
+                </select>                
+            </div>
+        </div>
+    </div>
+
+    <div  class="col-xs-10 col-xs-offset-1" id="tableContainer">
+        <p>Totale Impiegati considerati: {{$ctrl.impiegatiCount}}</p>
+        <table class="table table-striped table-bordered" id="reportTable">
+            <thead>
+                <tr>
+                    <th ng-repeat="col in $ctrl.selectedColumns" ng-bind="$ctrl.formatColumnLabel(col)"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="stat in $ctrl.statistiche">
+                    <td ng-repeat="col in $ctrl.selectedColumns">
+                        {{ $ctrl.formatStatName(stat[col], col) }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pulsante di stampa in basso a destra -->
+    <button class="btn btn-lg btn-success" id="printButton" ng-click="$ctrl.printReport()" style="display: flex; align-items: center; justify-content: center;">
+        <span class="glyphicon glyphicon-print" style="margin-right: 8px;"></span>
+        <span style="font-weight: bold; margin-top: 3px;">STAMPA REPORT</span>
+    </button>
+    
+    
+</div>

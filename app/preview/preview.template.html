@@ -1,6 +1,5 @@
 <!-- menu sinistro/destro in anteprima di stampa -->
 <div class="col-xs-1" id="destra">
-
     <div class="dropdown">
         <button class="btn btn-lg btn-default dropdown-toggle" type="button" data-toggle="dropdown">
             <span class="glyphicon glyphicon-cog"></span>
@@ -28,6 +27,9 @@
             <li ng-click="$ctrl.print_cliente()" ng-if="$ctrl.profilo != 'USER'">
                 <a>Stampa per cliente</a>
             </li>
+            <li ng-click="$ctrl.print_anonima()" ng-if="$ctrl.profilo != 'USER'">
+                <a>Stampa anonima</a>
+            </li>
         </ul>
     </div>
 
@@ -53,8 +55,8 @@
                 <img class="logo" ng-src="{{$ctrl.logo}}">
             </header>
 
-            <div class="spazio_fotoCV">
-                <img class="fotoCV" ng-src="{{$ctrl.foto}}">
+            <div id="spazio_fotoCV" class="spazio_fotoCV">
+                <img id="fotoCV" class="fotoCV" ng-src="{{$ctrl.foto}}">
             </div>
 
             <div class="dati">
@@ -65,6 +67,7 @@
 
             <div class="contatti">
                 <p id="emailCV" ng-if="$ctrl.pInfo.dipendente" ng-bind="$ctrl.pInfo.username"></p>
+
             </div>
         </div>
 

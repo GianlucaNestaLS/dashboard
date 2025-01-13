@@ -1002,6 +1002,44 @@ md-chips md-chip, md-chips.md-default-theme md-chip {
     height: 100%;
     background-color: #0073aa;
     overflow-y: auto;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    -webkit-padding-start: 0;
+}
+
+.sidebar-nav .submenu {
+    margin: 0; 
+    padding: 0;
+    list-style: none;
+    display: none;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.sidebar-nav .submenu[ng-show] {
+    display: block;
+}
+
+.sidebar-nav .submenu li {
+    margin: 0;
+    padding: 5px 0;
+}
+
+.sidebar-nav .submenu li a {
+    font-size: 14px;
+    padding-left: 15px;
+    text-decoration: none;
+    display: block;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav li > ul {
+    margin-top: -5px;
 }
 
 .nav {
@@ -1031,6 +1069,19 @@ md-chips md-chip, md-chips.md-default-theme md-chip {
     background-color: #0073aa !important;
     color: #fff !important;
     border-radius: unset;
+}
+
+.submenu {
+    display: none;
+    padding-left: 15px;
+}
+
+.submenu li a {
+    font-size: 14px;
+}
+
+.submenu li {
+    margin-top: 5px;
 }
 
 td, th {
@@ -1240,4 +1291,47 @@ md-radio-group {
     display: grid;
     grid-gap: 10px;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+#printButton {
+    position: fixed;
+    bottom: 20px;
+    right: 100px;
+    width: auto;
+    font-size: 16px;
+    padding: 15px 15px;
+}
+
+
+/* Supporto per Firefox */
+@-moz-document url-prefix() {
+    .sidebar-nav .submenu {
+        transform-style: preserve-3d;
+    }
+}
+
+/* Supporto per Safari */
+@media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) {
+        .sidebar-nav .submenu {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+    }
+}
+
+/* Edge and IE */
+@supports (-ms-ime-align:auto) {
+    .sidebar-nav .submenu {
+        -ms-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+    }
+}
+
+/* Chrome */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .sidebar-nav .submenu {
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+    }
 }

@@ -25,10 +25,31 @@ angular.module('homeApp')
                 profili: ['ADMINISTRATOR', 'ALL_USERS']
             })
 
-            .state('logout.sidebarHome.stats', {
-                url: '^/stats',
-                template: '<stats></stats>',
-                title: 'CV aziendali - Statistiche',
+            .state('logout.sidebarHome.tagStats', {
+                url: '^/tag-stats',
+                template: '<tag-stats></tag-stats>',
+                title: 'CV aziendali - Statistiche Tag',
+                profili: ['ADMINISTRATOR', 'ALL_USERS']
+            })
+
+            .state('logout.sidebarHome.softwareStats', {
+                url: '^/software-stats',
+                template: '<software-stats></software-stats>',
+                title: 'CV aziendali - Statistiche Software',
+                profili: ['ADMINISTRATOR', 'ALL_USERS']
+            })
+
+            .state('logout.sidebarHome.hardwareStats', {
+                url: '^/hardware-stats',
+                template: '<hardware-stats></hardware-stats>',
+                title: 'CV aziendali - Statistiche Hardware',
+                profili: ['ADMINISTRATOR', 'ALL_USERS']
+            })
+
+            .state('logout.sidebarHome.hardwareReports', {
+                url: '^/hardware-reports',
+                template: '<hardware-reports></hardware-reports>',
+                title: 'CV aziendali - Reports Hardware',
                 profili: ['ADMINISTRATOR', 'ALL_USERS']
             })
 

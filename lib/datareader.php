@@ -15,6 +15,19 @@ class Tag
     }
 }
 
+class Stats
+{
+    public $name;
+    public $percent;
+    public $count;
+
+    public function __construct($name, $percent, $count) {
+        $this->name = $name;
+        $this->percent = $percent;
+        $this->count = $count;
+    }
+}
+
 class DataReader
 {
     public function getList($societa) {
@@ -43,9 +56,9 @@ class DataReader
         $data["exp"] = self::getExp($db, $id);
         $data["form"] = self::getForm($db, $id);
         $data["lang"] = self::getLang($db, $id);
-        $data["tags"] = self::getTags($db, $id);
         $data["hardware"] = self::getHardware($db, $id);
         $data["software"] = self::getSoftware($db, $id);
+        $data["tags"] = self::getTags($db, $id);
         if ($full) {
             $data["listLvl"] = self::getListaLivelli($db);
             $data["listLang"] = self::getListaLingue($db);
@@ -122,41 +135,79 @@ class DataReader
     }
 
 
-    public function stats($societa, $dipendente) {
+    public function tagStats($societa, $dipendente) {
         $dataset = array();
         $db = new CVdb();
         $condition = '';
+        $params = [];
         $where = 'WHERE userid IN (SELECT userid FROM impiegati WHERE';
+    
         if ($societa != '') {
-            $condition = "$where societa = $societa";
+            $condition = "$where societa = ?";
+            $params[] = $societa;
         }
+    
         if ($dipendente != '') {
             $prefix = $condition == '' ? $where : ' AND';
-            $condition .= "$prefix dipendente = $dipendente";
+            $condition .= "$prefix dipendente = ?";
+            $params[] = $dipendente;
         }
+    
         if ($condition != '') {
             $condition .= ')';
         }
-        $result = $db->query("SELECT COUNT(tag), COUNT(DISTINCT userid) FROM tags $condition");
+    
+        // Query principale per conteggio totale
+        $stmt = $db->prepare("SELECT COUNT(tag), COUNT(DISTINCT userid) FROM tags $condition");
+        if (!empty($params)) {
+            $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
         $row = $result->fetch_array(MYSQLI_NUM);
         $tags = $row[0];
         $imp = $row[1];
+        $stmt->close();
+    
         if ($tags > 0) {
-            $stmt = $db->prepare("SELECT tag, COUNT(tag) AS c FROM tags $condition GROUP BY tag HAVING c > 1 ORDER BY 2 DESC, 1 ASC");
+            // Query per conteggio dei tag
+            $stmt = $db->prepare("SELECT tag, COUNT(tag) AS c 
+                                   FROM tags $condition 
+                                   GROUP BY tag 
+                                   HAVING c > 1 
+                                   ORDER BY 2 DESC, 1 ASC");
+            if (!empty($params)) {
+                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+            }
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_array(MYSQLI_NUM)) {
                 array_push($dataset, new Tag($row[0], ($row[1] / $tags) * 100, $row[1]));
             }
             $stmt->close();
+    
+            // Calcolo degli "altri"
             if (empty($dataset)) {
-                $sql = "SELECT tag, COUNT(tag) AS c FROM tags $condition GROUP BY tag";
+                $sql = "SELECT tag, COUNT(tag) AS c 
+                        FROM tags $condition 
+                        GROUP BY tag";
             } else {
-                $sql = "SELECT SUM(c) FROM (SELECT tag, COUNT(tag) AS c FROM tags $condition GROUP BY tag HAVING c = 1) t";
+                $sql = "SELECT SUM(c) 
+                        FROM (
+                            SELECT tag, COUNT(tag) AS c 
+                            FROM tags $condition 
+                            GROUP BY tag 
+                            HAVING c = 1
+                        ) t";
             }
+    
             $stmt = $db->prepare($sql);
+            if (!empty($params)) {
+                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+            }
             $stmt->execute();
             $result = $stmt->get_result();
+    
             if (empty($dataset)) {
                 while ($row = $result->fetch_array(MYSQLI_NUM)) {
                     array_push($dataset, new Tag($row[0], ($row[1] / $tags) * 100, $row[1]));
@@ -166,11 +217,304 @@ class DataReader
                 array_push($dataset, new Tag('Altri', ($others / $tags) * 100, $others));
             }
             $stmt->close();
-            $db->close();
         }
+    
+        $db->close();
         return array('data' => $dataset, 'imp' => $imp);
     }
+    
 
+    public function softwareStats($societa, $dipendente, $colonna) {
+        // Convalida il parametro colonna
+        $colonnaValida = in_array($colonna, [
+            'sistema_operativo',
+            'office_suite',
+            'browser',
+            'antivirus',
+            'software_comunicazione',
+            'software_crittografia'
+        ]) ? $colonna : 'sistema_operativo';
+    
+        $dataset = [];
+        $db = new CVdb();
+        $condition = '';
+        $params = [];
+        $where = 'WHERE userid IN (SELECT userid FROM impiegati WHERE';
+    
+        if ($societa != '') {
+            $condition = "$where societa = ?";
+            $params[] = $societa;
+        }
+    
+        if ($dipendente != '') {
+            $prefix = $condition == '' ? $where : ' AND';
+            $condition .= "$prefix dipendente = ?";
+            $params[] = $dipendente;
+        }
+    
+        if ($condition != '') {
+            $condition .= ')';
+        }
+    
+        // Query principale per il conteggio
+        $stmt = $db->prepare("SELECT COUNT($colonnaValida), COUNT(DISTINCT userid) FROM software $condition");
+        if (!empty($params)) {
+            $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_array(MYSQLI_NUM);
+        $software = $row[0];
+        $imp = $row[1];
+        $stmt->close();
+    
+        if ($software > 0) {
+            // Query per il conteggio per la colonna specificata
+            $stmt = $db->prepare("SELECT $colonnaValida, COUNT($colonnaValida) AS c 
+                                   FROM software $condition 
+                                   GROUP BY $colonnaValida 
+                                   HAVING c > 1 
+                                   ORDER BY 2 DESC, 1 ASC");
+            if (!empty($params)) {
+                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_array(MYSQLI_NUM)) {
+                array_push($dataset, new Stats($row[0], ($row[1] / $software) * 100, $row[1]));
+            }
+            $stmt->close();
+    
+            // Calcolo degli "altri"
+            if (empty($dataset)) {
+                $sql = "SELECT $colonnaValida, COUNT($colonnaValida) AS c 
+                        FROM software $condition 
+                        GROUP BY $colonnaValida";
+            } else {
+                $sql = "SELECT SUM(c) FROM (
+                            SELECT $colonnaValida, COUNT($colonnaValida) AS c 
+                            FROM software $condition 
+                            GROUP BY $colonnaValida 
+                            HAVING c = 1
+                        ) t";
+            }
+            $stmt = $db->prepare($sql);
+            if (!empty($params)) {
+                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if (empty($dataset)) {
+                while ($row = $result->fetch_array(MYSQLI_NUM)) {
+                    array_push($dataset, new Stats($row[0], ($row[1] / $software) * 100, $row[1]));
+                }
+            } else {
+                $others = intval($result->fetch_array(MYSQLI_NUM)[0]);
+                array_push($dataset, new Stats('Altro', ($others / $software) * 100, $others));
+            }
+            $stmt->close();
+        }
+    
+        $db->close();
+    
+        return [
+            'data' => $dataset,
+            'imp' => $imp
+        ];
+    }
+    
+
+    public function hardwareStats($societa, $dipendente, $colonna) {
+        // Convalida il parametro colonna
+        $colonnaValida = in_array($colonna, [
+            'marca_modello_notebook',
+            'processore',
+            'memoria_ram',
+            'tipo_storage',
+            'capacita_storage',
+            'monitor_esterno',
+            'tastiera_mouse_esterni',
+            'stampante',
+        ]) ? $colonna : 'marca_modello_notebook';
+    
+        $dataset = [];
+        $db = new CVdb();
+        $condition = '';
+        $params = [];
+        $where = 'WHERE userid IN (SELECT userid FROM impiegati WHERE';
+    
+        if ($societa != '') {
+            $condition = "$where societa = ?";
+            $params[] = $societa;
+        }
+    
+        if ($dipendente != '') {
+            $prefix = $condition == '' ? $where : ' AND';
+            $condition .= "$prefix dipendente = ?";
+            $params[] = $dipendente;
+        }
+    
+        if ($condition != '') {
+            $condition .= ')';
+        }
+    
+        // Query principale per il conteggio
+        $stmt = $db->prepare("SELECT COUNT($colonnaValida), COUNT(DISTINCT userid) FROM hardware $condition");
+        if (!empty($params)) {
+            $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_array(MYSQLI_NUM);
+        $hardware = $row[0];
+        $imp = $row[1];
+        $stmt->close();
+    
+        if ($hardware > 0) {
+            // Query per il conteggio per la colonna specificata
+            $stmt = $db->prepare("SELECT $colonnaValida, COUNT($colonnaValida) AS c 
+                                   FROM hardware $condition 
+                                   GROUP BY $colonnaValida 
+                                   HAVING c > 1 
+                                   ORDER BY 2 DESC, 1 ASC");
+            if (!empty($params)) {
+                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_array(MYSQLI_NUM)) {
+                array_push($dataset, new Stats($row[0], ($row[1] / $hardware) * 100, $row[1]));
+            }
+            $stmt->close();
+    
+            // Calcolo degli "altri"
+            if (empty($dataset)) {
+                $sql = "SELECT $colonnaValida, COUNT($colonnaValida) AS c 
+                        FROM hardware $condition 
+                        GROUP BY $colonnaValida";
+            } else {
+                $sql = "SELECT SUM(c) FROM (
+                            SELECT $colonnaValida, COUNT($colonnaValida) AS c 
+                            FROM hardware $condition 
+                            GROUP BY $colonnaValida 
+                            HAVING c = 1
+                        ) t";
+            }
+            $stmt = $db->prepare($sql);
+            if (!empty($params)) {
+                $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if (empty($dataset)) {
+                while ($row = $result->fetch_array(MYSQLI_NUM)) {
+                    array_push($dataset, new Stats($row[0], ($row[1] / $hardware) * 100, $row[1]));
+                }
+            } else {
+                $others = intval($result->fetch_array(MYSQLI_NUM)[0]);
+                array_push($dataset, new Stats('Altro', ($others / $hardware) * 100, $others));
+            }
+            $stmt->close();
+        }
+    
+        $db->close();
+    
+        return [
+            'data' => $dataset,
+            'imp' => $imp
+        ];
+    }
+
+    
+    public function hardwareReports($societa, $dipendente, $colonna) {
+        // Convalida il parametro colonna
+        $colonnaValida = in_array($colonna, [
+            'marca_modello_notebook',
+            'processore',
+            'memoria_ram',
+            'tipo_storage',
+            'capacita_storage',
+            'monitor_esterno',
+            'tastiera_mouse_esterni',
+            'stampante',
+        ]) ? $colonna : 'marca_modello_notebook';
+    
+        $dataset = [];
+        $db = new CVdb();
+        $condition = '';
+        $params = [];
+        $where = 'WHERE userid IN (SELECT userid FROM impiegati WHERE';
+    
+        if ($societa != '') {
+            $condition = "$where societa = ?";
+            $params[] = $societa;
+        }
+    
+        if ($dipendente != '') {
+            $prefix = $condition == '' ? $where : ' AND';
+            $condition .= "$prefix dipendente = ?";
+            $params[] = $dipendente;
+        }
+    
+        if ($condition != '') {
+            $condition .= ')';
+        }
+    
+        // Query principale per i dettagli dell'hardware, con nome e cognome sempre visibili
+        $stmt = $db->prepare("SELECT 
+                                    u.nome,
+                                    u.cognome,
+                                    h.nome_dispositivo,
+                                    h.marca_modello_notebook,
+                                    h.serial_number,
+                                    h.product_key,
+                                    h.mac_address,
+                                    h.processore,
+                                    h.memoria_ram,
+                                    h.tipo_storage,
+                                    h.capacita_storage,
+                                    h.monitor_esterno,
+                                    h.tastiera_mouse_esterni,
+                                    h.stampante,
+                                    h.data_compilazione
+                                FROM hardware h
+                                JOIN users u ON h.userid = u.id
+                                $condition");
+    
+        if (!empty($params)) {
+            $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+        }
+    
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        while ($row = $result->fetch_assoc()) {
+            $dataset[] = [
+                'nome' => $row['nome'],
+                'cognome' => $row['cognome'],
+                'nome_dispositivo' => $row['nome_dispositivo'],
+                'marca_modello_notebook' => $row['marca_modello_notebook'],
+                'serial_number' => $row['serial_number'],
+                'product_key' => $row['product_key'],
+                'mac_address' => $row['mac_address'],
+                'processore' => $row['processore'],
+                'memoria_ram' => $row['memoria_ram'],
+                'tipo_storage' => $row['tipo_storage'],
+                'capacita_storage' => $row['capacita_storage'],
+                'monitor_esterno' => $row['monitor_esterno'],
+                'tastiera_mouse_esterni' => $row['tastiera_mouse_esterni'],
+                'stampante' => $row['stampante'],
+                'data_compilazione' => $row['data_compilazione']
+            ];
+        }
+    
+        $stmt->close();
+        $db->close();
+    
+        return [
+            'data' => $dataset
+        ];
+    }
 
     private function getPInfo($db, $id) {
         $stmt = $db->prepare("SELECT u.id, u.username, u.nome, cognome, mansione, competenzePro, foto, selezionato, dipendente, s.nome societa, s.id id_soc, s.dominio, s.logo, s.carta_intestata, ral, valutazione, giudizio, telefono, email_pers FROM impiegati i JOIN societa s ON s.id = i.societa JOIN users u ON u.id = i.userid WHERE u.id = ?");
@@ -231,6 +575,8 @@ class DataReader
                     marca_modello_notebook,
                     serial_number,
                     product_key,
+                    nome_dispositivo,
+                    mac_address,
                     processore,
                     memoria_ram,
                     tipo_storage,
@@ -257,6 +603,7 @@ class DataReader
     private static function getSoftware($db, $userid) {
         $softwareData = [];
         $query = "SELECT 
+                    data_compilazione,
                     sistema_operativo,
                     office_suite,
                     browser,
@@ -278,34 +625,17 @@ class DataReader
         $stmt->close();
         return $softwareData;
     }
-    
-    
-    // private function getTags($db, $id) {
-    //     $data = [];
-    //     $result = $db->query("SELECT tag FROM tags WHERE userid = $id ORDER BY @rownum");
-        
-    //     while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-    //         $data[] = $row;
-    //     }
-    //     return $data;
-    // }
+
 
     private function getTags($db, $id) {
         $data = [];
-        $query = "
-            SELECT tag, @rownum := @rownum + 1 AS rownum 
-            FROM tags
-            CROSS JOIN (SELECT @rownum := 0) AS init
-            WHERE userid = '$id'
-            ORDER BY tag
-        ";
-        $result = $db->query($query);
+        $result = $db->query("SELECT tag FROM tags WHERE userid = $id ORDER BY @rownum");
         while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
             $data[] = $row;
         }
         return $data;
     }
-    
+
 
 
     private function getListaLingue($db) {

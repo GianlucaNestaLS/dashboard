@@ -15,6 +15,7 @@ class DataWriter
         return $ret;
     }
 
+
     public function create($username, $nome, $cognome, $societa, $password, $profilo) {
         $db = begin();
         try {
@@ -37,6 +38,7 @@ class DataWriter
         }
         return $userid;
     }
+
 
     public function delete($id, $db) {
         $isolated = is_null($db);
@@ -61,6 +63,7 @@ class DataWriter
         }
         return 200;
     }
+
 
     public function edit($username, $nome, $cognome, $societa, $userid, $password, $profilo) {
         $db = new CVdb();
@@ -182,82 +185,10 @@ class DataWriter
         return $userid;
     }
 
-    // public function save($data, $cleanup) {
-    //     // Log di avvio della funzione
-    //     error_log("DEBUG: Avvio della funzione save");
-    
-    //     $inf_data = $data['pInfo'] ?? null;
-    //     $exp_data = $data['exp'] ?? null;
-    //     $for_data = $data['form'] ?? null;
-    //     $lan_data = $data['lang'] ?? null;
-    //     $tag_data = $data['tags'] ?? null;
-    //     $hw_data = $data['hardware'] ?? null;
-    //     $sw_data = $data['software'] ?? null;
-    
-    //     if (!$inf_data) error_log("AVVISO: Mancano dati in 'pInfo'");
-    //     if (!$exp_data) error_log("AVVISO: Mancano dati in 'exp'");
-    //     if (!$for_data) error_log("AVVISO: Mancano dati in 'form'");
-    //     if (!$lan_data) error_log("AVVISO: Mancano dati in 'lang'");
-    //     if (!$tag_data) error_log("AVVISO: Mancano dati in 'tags'");
-    //     if (!$hw_data) error_log("AVVISO: Mancano dati in 'hardware'");
-    //     if (!$sw_data) error_log("AVVISO: Mancano dati in 'software'");
-    
-    //     $res = false;
-    //     $userid = -1;
-    
-    //     if ($inf_data && $exp_data && $for_data && $lan_data && $tag_data && $hw_data && $sw_data) {
-    //         $db = begin();
-    //         error_log("DEBUG: Connessione al database avviata");
-    //         $res = true;
-    
-    //         error_log("DEBUG: Cleanup richiesto. Valore di \$cleanup: " . var_export($cleanup, true));
-    //         if ($cleanup) {
-    //             $userid = $inf_data['id'];
-    //             error_log("DEBUG: Cleanup richiesto per userid: $userid");
-    //             $res = ($this->deleteDatiImp($userid, $db) == 200);
-    //         }
-            
-    //         if ($res) {
-    //             $userid = $this->salvaPInfo($db, $inf_data, $userid);
-    //             if ($userid != -1) {
-    //                 if ($this->salvaExp($db, $exp_data, $userid) == 200 &&
-    //                     $this->salvaForm($db, $for_data, $userid) == 200 &&
-    //                     $this->salvaLang($db, $lan_data, $userid) == 200 &&
-    //                     $this->salvaHardware($db, $hw_data, $userid) == 200 &&
-    //                     $this->salvaSoftware($db, $sw_data, $userid) == 200 &&
-    //                     $this->salvaTag($db, $tag_data, $userid) == 200) {
-    //                     commit($db);
-    //                     error_log("DEBUG: Transazione completata con successo");
-    //                     $res = true;
-    //                 } else {
 
-    //                     rollback($db);
-    //                     error_log("ERRORE: Errore durante il salvataggio di una delle tabelle.");
-    //                     $res = false;
-    //                 }
-    //             } else {
-    //                 error_log("ERRORE: salvaPInfo ha restituito userid -1");
-    //                 $res = false;
-    //             }
-    //         } else {
-    //             error_log("ERRORE: Cleanup fallito.");
-    //         }
-    
-    //         if (!$res) {
-    //             rollback($db);
-    //             error_log("DEBUG: Rollback eseguito.");
-    //         }
-    //     } else {
-    //         error_log("ERRORE: Dati mancanti per la funzione save.");
-    //     }
-    
-    //     return $userid;
-    // }
-    
-    
     private function deleteDatiImp($id, $db) {
         try {
-            $tables = array('esperienze', 'formazione', 'lingue', 'tags', 'hardware', 'software');
+            $tables = array('esperienze', 'formazione', 'lingue', 'hardware', 'software', 'tags');
             $index = 0;
             $result = true;
             while ($result && ($index < count($tables))) {
@@ -274,33 +205,6 @@ class DataWriter
         }
         return 200;
     }
-
-    // private function deleteDatiImp($id, $db) {
-    //     try {
-    //         $tables = ['esperienze', 'formazione', 'lingue', 'tags', 'hardware', 'software'];
-    //         foreach ($tables as $table) {
-    //             // Preparazione della query in modo sicuro, senza concatenazioni dirette
-    //             $stmt = $db->prepare("DELETE FROM $table WHERE userid = ?");
-    //             if (!$stmt) {
-    //                 error_log("Errore nella preparazione della query DELETE per la tabella $table: " . $db->error);
-    //                 return 500; // Fallimento nella preparazione della query
-    //             }
-    //             $stmt->bind_param('i', $id);
-    
-    //             if (!$stmt->execute()) {
-    //                 error_log("Errore durante l'esecuzione della query DELETE per la tabella $table: " . $stmt->error);
-    //                 $stmt->close();
-    //                 return 500; // Fallimento nell'esecuzione della query
-    //             }
-    //             $stmt->close(); // Chiudi la query per ogni iterazione
-    //         }
-    //     } catch (Exception $e) {
-    //         error_log("Eccezione catturata in deleteDatiImp: " . $e->getMessage());
-    //         return 500; // Ritorna errore in caso di eccezione
-    //     }
-    //     return 200; // Successo
-    // }
-    
 
 /*
     public function validate($id) {
@@ -333,6 +237,7 @@ class DataWriter
         }
         return $userid;
     }
+
 
     private function salvaExp($db, $data, $userid) {
         try {
@@ -402,8 +307,10 @@ class DataWriter
                     UPDATE hardware
                     SET data_compilazione = ?, 
                         marca_modello_notebook = ?, 
-                        serial_number = ?, 
+                        serial_number = ?,
                         product_key = ?, 
+                        nome_dispositivo = ?,
+                        mac_address = ?, 
                         processore = ?, 
                         memoria_ram = ?, 
                         tipo_storage = ?, 
@@ -424,6 +331,8 @@ class DataWriter
                         marca_modello_notebook, 
                         serial_number, 
                         product_key, 
+                        nome_dispositivo,
+                        mac_address,
                         processore, 
                         memoria_ram, 
                         tipo_storage, 
@@ -431,7 +340,7 @@ class DataWriter
                         monitor_esterno, 
                         tastiera_mouse_esterni, 
                         stampante
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
             }
     
@@ -441,13 +350,15 @@ class DataWriter
     
             // Assegna i valori a variabili locali
             $dataCompilazione = $data['data_compilazione'] ?? date('Y-m-d');
-            $marcaModelloNotebook = $data['marca_modello_notebook'] ?? 'Sconosciuto';
-            $serialNumber = $data['serial_number'] ?? 'N/D';
-            $productKey = $data['product_key'] ?? 'N/D';
-            $processore = $data['processore'] ?? 'N/D';
-            $memoriaRAM = $data['memoria_ram'] ?? '0 GB';
-            $tipoStorage = $data['tipo_storage'] ?? 'N/D';
-            $capacitaStorage = $data['capacita_storage'] ?? '0 GB';
+            $marcaModelloNotebook = $data['marca_modello_notebook'] ?? '';
+            $serialNumber = $data['serial_number'] ?? '';
+            $productKey = $data['product_key'] ?? '';
+            $nomeDispositivo = $data['nome_dispositivo'] ?? '';
+            $macAddress = $data['mac_address'] ?? '';
+            $processore = $data['processore'] ?? '';
+            $memoriaRAM = $data['memoria_ram'] ?? '';
+            $tipoStorage = $data['tipo_storage'] ?? '';
+            $capacitaStorage = $data['capacita_storage'] ?? '';
             $monitorEsterno = isset($data['monitor_esterno']) ? $data['monitor_esterno'] : 0;
             $tastieraMouseEsterni = isset($data['tastiera_mouse_esterni']) ? $data['tastiera_mouse_esterni'] : 0;
             $stampante = isset($data['stampante']) ? $data['stampante'] : 0;
@@ -456,12 +367,14 @@ class DataWriter
             error_log("Valori da salvare: data_compilazione=$dataCompilazione, marca_modello_notebook=$marcaModelloNotebook, serial_number=$serialNumber, product_key=$productKey, processore=$processore, memoria_ram=$memoriaRAM, tipo_storage=$tipoStorage, capacita_storage=$capacitaStorage, monitor_esterno=$monitorEsterno, tastiera_mouse_esterni=$tastieraMouseEsterni, stampante=$stampante");
             // Associa i parametri alla query usando variabili
             $stmt->bind_param(
-                'issssssssiii',
+                'issssssssssiii',
                 $userid,
                 $dataCompilazione,
                 $marcaModelloNotebook,
                 $serialNumber,
                 $productKey,
+                $nomeDispositivo,
+                $macAddress,
                 $processore,
                 $memoriaRAM,
                 $tipoStorage,
@@ -490,6 +403,7 @@ class DataWriter
             error_log("Inizio salvaSoftware per userid: $userid");
     
             // Variabili locali per i valori da bindare
+            $dataCompilazione = $data['data_compilazione'] ?? date('Y-m-d');
             $sistema_operativo = $data['sistema_operativo'] ?? null;
             $office_suite = $data['office_suite'] ?? null;
             $browser = $data['browser'] ?? null;
@@ -501,14 +415,16 @@ class DataWriter
             $stmt = $db->prepare("
                 INSERT INTO software (
                     userid, 
+                    data_compilazione,
                     sistema_operativo, 
                     office_suite, 
                     browser, 
                     antivirus, 
                     software_comunicazione, 
                     software_crittografia
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE
+                    data_compilazione = VALUES(data_compilazione),
                     sistema_operativo = VALUES(sistema_operativo),
                     office_suite = VALUES(office_suite),
                     browser = VALUES(browser),
@@ -523,8 +439,9 @@ class DataWriter
     
             // Associa i parametri alla query usando variabili
             $stmt->bind_param(
-                'issssss',
+                'isssssss',
                 $userid,
+                $dataCompilazione,
                 $sistema_operativo,
                 $office_suite,
                 $browser,
@@ -548,7 +465,8 @@ class DataWriter
             return 500; // Fallimento
         }
     }
-        
+
+
     private function salvaTag($db, $data, $userid) {
         try {
             for ($i = 0; $i < count($data); $i++) {
@@ -564,6 +482,7 @@ class DataWriter
         return 200;
     }
 
+
     public function creaSocieta($data) {
         $db = new CVdb();
         $stmt = $db->prepare("INSERT INTO societa(nome, dominio, logo, carta_intestata) VALUES (?, ?, ?, ?)");
@@ -578,6 +497,7 @@ class DataWriter
         return $result;
     }
 
+
     public function modificaSocieta($data) {
         $db = new CVdb();
         $stmt = $db->prepare("UPDATE societa SET nome = ?, dominio = ?, logo = ?, carta_intestata = ? WHERE id = ?");
@@ -588,6 +508,7 @@ class DataWriter
         return $result;
     }
 
+
     public function eliminaSocieta($id) {
         $db = new CVdb();
         $stmt = $db->prepare("DELETE FROM societa WHERE id = ?");
@@ -597,6 +518,7 @@ class DataWriter
         $db->close();
         return $result;
     }
+
 
     public function salvaPassword($user, $password) {
         $db = new CVdb();

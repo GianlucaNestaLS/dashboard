@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="row">
+        <div class="page-header col-xs-8 col-xs-offset-2">
+            <h1>Statistiche Hardware</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-2 col-xs-offset-2" ng-if="$ctrl.profilo == 'ADMINISTRATOR'">
+            <select class="form-control" ng-model="$ctrl.societa" ng-change="$ctrl.getHardwareStats()">
+                <option value="">Tutte le Società</option>
+                <option ng-repeat="soc in $ctrl.listaSoc" value="{{soc.id}}">{{soc.nome}}</option>
+            </select>
+        </div>
+        <div class="col-xs-2" ng-class="{'col-xs-offset-2': $ctrl.profilo == 'ALL_USERS'}">
+            <select class="form-control" ng-model="$ctrl.dipendente" ng-change="$ctrl.getHardwareStats()">
+                <option value="">Tutti gli Impiegati</option>
+                <option value="1">Dipendenti</option>
+                <option value="0">Non Dipendenti</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <select class="form-control" ng-model="$ctrl.colonna" ng-change="$ctrl.getHardwareStats()">
+                    <option value="marca_modello_notebook">Marca/Modello</option>
+                    <option value="processore">Processore</option>
+                    <option value="memoria_ram">Memoria RAM</option>
+                    <option value="tipo_storage">Tipo Storage</option>
+                    <option value="capacita_storage">Capacita Storage</option>
+                    <option value="monitor_esterno">Monitor Esterno</option>
+                    <option value="tastiera_mouse_esterni">Tastiera/Mouse Esterni</option>
+                    <option value="stampante">Stampante</option>
+                </select>                
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-3 col-xs-offset-2" id="tableContainer">
+        <p>Totale Impiegati considerati: {{$ctrl.impiegati}}</p>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th ng-bind="$ctrl.getColonnaLabel()"></th>
+                    <th>Percentuale</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <!-- <tbody>
+                <tr ng-repeat="stat in $ctrl.statistiche">
+                    <td ng-bind="stat.name"></td>
+                    <td><span ng-bind="stat.percent | number: 1"></span>%</td>
+                    <td ng-bind="stat.count"></td>
+                </tr>
+            </tbody> -->
+            <tbody>
+                <tr ng-repeat="stat in $ctrl.statistiche">
+                    <td ng-bind="::$ctrl.formatStatName(stat.name, $ctrl.colonna, $index)"></td>
+                    <td><span ng-bind="stat.percent | number: 1"></span>%</td>
+                    <td ng-bind="stat.count"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="tortaHardware" class="col-xs-6"></div>
+</div>

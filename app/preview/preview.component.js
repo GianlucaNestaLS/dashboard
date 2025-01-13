@@ -39,6 +39,24 @@ angular.module('preview')
                     $('#emailCV').show();
                 };
 
+                self.print_anonima = function() {
+                    
+                    $('#spazio_fotoCV').removeClass('spazio_fotoCV');
+                    $('#fotoCV').hide(); 
+
+                    $('#nomeCV').text(self.pInfo.nome.charAt(0) + '.' + ' ' + self.pInfo.cognome.charAt(0) + '.');
+                    $('#cognomeCV').hide();
+
+                    $('#emailCV').hide(); 
+                    
+                    print();
+                
+                    $('#spazio_fotoCV').addClass('spazio_fotoCV');
+                    $('#fotoCV').show();
+                    $('#nomeCV').text(self.pInfo.nome);
+                    $('#cognomeCV').text(self.pInfo.cognome);
+                    $('#emailCV').show();
+                };
             }
 
             else {

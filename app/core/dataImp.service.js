@@ -41,50 +41,21 @@ angular.module('dataImp')
 
                 data.tags = angular.copy(dati.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
                 
-                console.log('dati hardware', dati.hardware);
+                // console.log('dati hardware', dati.hardware);
                 data.hardware = angular.copy(dati.hardware);
 
-                console.log('data hardware', data.hardware);
-
-                // if (!data.hardware.memoria_ram) data.hardware.memoria_ram = "N/A";
-                // if (!data.hardware.tipo_storage) data.hardware.tipo_storage = "N/A";
-                // if (!data.hardware.capacita_storage) data.hardware.capacita_storage = "0";
-                // if (data.hardware.monitor_esterno === undefined || data.hardware.monitor_esterno === null) {
-                //     data.hardware.monitor_esterno = 0;
-                // }
-                // if (data.hardware.tastiera_mouse_esterni === undefined || data.hardware.tastiera_mouse_esterni === null) {
-                //     data.hardware.tastiera_mouse_esterni = 0;
-                // }
-                
-                // if (data.hardware && data.hardware.data_compilazione) {
-                //     var date = new Date(data.hardware.data_compilazione);
-                
-                //     var year = date.getFullYear();
-                //     var month = (date.getMonth() + 1).toString().padStart(2, '0');
-                //     var day = date.getDate().toString().padStart(2, '0');
-                
-                //     data.hardware.data_compilazione = `${year}-${month}-${day}`;
-                // }
-
-                // data.hardware.monitor_esterno = boolToInt(dati.hardware.monitor_esterno);
-                // data.hardware.tastiera_mouse_esterni = boolToInt(dati.hardware.tastiera_mouse_esterni);
-                // data.hardware.stampante = boolToInt(dati.hardware.stampante);
+                // console.log('data hardware', data.hardware);
 
                 data.software = angular.copy(dati.software);
 
-                console.log('oggetto data inviato', data);
+                // console.log('oggetto data inviato', data);
                 return data;
             }
             return dati;
         };
 
-
         function boolToInt(bb) {
             return (bb ? 1 : 0);
-        }
-
-        function intToBool(int) {
-            return int == true;
         }
 
         self.setDati = function(d) {

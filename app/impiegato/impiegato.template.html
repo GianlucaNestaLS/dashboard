@@ -313,187 +313,231 @@
 
     </div>
 
+        <!-- Inizio sezione con Caratteristiche Hardware e Software -->
+        <div class="row" id="dothwsw">
 
-    <!-- Inizio sezione con Caratteristiche Hardware e Software -->
-    <div class="row" id="dothwsw">
+            <div class="page-header col-xs-8 col-xs-offset-2">
+                <h2>DOTAZIONI HARDWARE E SOFTWARE</h2>
+            </div>
+    
+            <div class="col-xs-8 col-xs-offset-2">
+    
+                <div layout="row" layout-align="left center">   
+                    <div class="col-xs-3">DATA DI COMPILAZIONE:</div>
+                    <div class="col-xs-9">
+                        <input type="month" class="form-control" id="dataCompilazione" name="dataCompilazione" ng-model="$ctrl.hardware.data_compilazione">
+                    </div>
+                </div>
+    
+                <h3>Caratteristiche Hardware</h3>
+    
+                <div layout="row" layout-align="left center">   
+                    <div class="col-xs-3">MARCA E MODELLO NOTEBOOK:</div>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" name="marcaModelloNotebook" ng-model="$ctrl.hardware.marca_modello_notebook">
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">   
+                    <div class="col-xs-3">SERIAL NUMBER:</div>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" id="serialNumber" name="serialNumber" ng-model="$ctrl.hardware.serial_number">
+                    </div>
+                </div>
 
-        <div class="page-header col-xs-8 col-xs-offset-2">
-            <h2>DOTAZIONI HARDWARE E SOFTWARE</h2>
+                <div layout="row" layout-align="left center" class="mt-1">   
+                    <div class="col-xs-3">NOME DISPOSITIVO:</div>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" id="nomeDispositivo" name="nomeDispositivo" ng-model="$ctrl.hardware.nome_dispositivo">
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">   
+                    <div class="col-xs-3">PRODUCT KEY:</div>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" id="productKey" name="productKey" ng-model="$ctrl.hardware.product_key">
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">
+                    <div class="col-xs-3">MAC ADDRESS:</div>
+                    <div class="col-xs-9">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="macAddress" 
+                            name="macAddress" 
+                            ng-model="$ctrl.hardware.mac_address" 
+                            ng-change="$ctrl.formatMacAddress()" 
+                            maxlength="17">
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">   
+                    <div class="col-xs-3">PROCESSORE (CPU):</div>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" id="processore" name="processore" ng-model="$ctrl.hardware.processore">
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">   
+                    <div class="col-xs-3">MEMORIA RAM - CAPACITÀ:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="memoriaRAM" name="memoriaRAM" ng-model="$ctrl.hardware.memoria_ram">
+                            <option value="4GB">4GB</option>
+                            <option value="8GB">8GB</option>
+                            <option value="16GB">16GB</option>
+                            <option value="20GB">20GB</option>
+                            <option value="32GB">32GB</option>
+                            <option value="48GB">48GB</option>
+                            <option value="64GB">64GB</option>
+                            <option value="96GB">96GB</option>
+                            <option value="128GB">128GB</option>
+                            <option value="128GB">192GB</option>
+                            <option value="maggiore">Maggiore di 192GB</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div layout="row" layout-align="left center" class="mt-1">   
+                    <div class="col-xs-3">STORAGE - TIPO:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="tipoStorage" name="tipoStorage" ng-model="$ctrl.hardware.tipo_storage">
+                            <option value="SSD">SSD</option>
+                            <option value="HDD">HDD</option>
+                            <option value="Altro">Altro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div layout="row" layout-align="left center" class="mt-1">   
+                    <div class="col-xs-3">STORAGE - CAPACITÀ:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="capacitaStorage" name="capacitaStorage" ng-model="$ctrl.hardware.capacita_storage">
+                            <option value="256GB">256GB</option>
+                            <option value="512GB">512GB</option>
+                            <option value="1TB">1TB</option>
+                            <option value="2TB">2TB</option>
+                            <option value="4TB">4TB</option>
+                            <option value="8TB">8TB</option>
+                            <option value="maggiore">Maggiore di 8TB</option>
+                        </select>
+                    </div>
+                </div>
+                
+    
+                <h3>Altre Periferiche</h3>
+    
+                <div layout="row" layout-align="left center">   
+                    <div class="col-xs-4">MONITOR ESTERNO:</div>
+                    <div class="col-xs-8">
+                        <md-switch class="md-primary" name="monitorEsterno" ng-model="$ctrl.hardware.monitor_esterno" aria-label="Monitor Esterno"></md-switch>
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center">   
+                    <div class="col-xs-4">TASTIERA E MOUSE ESTERNI:</div>
+                    <div class="col-xs-8">
+                        <md-switch class="md-primary" name="tastieraMouseEsterni" ng-model="$ctrl.hardware.tastiera_mouse_esterni" aria-label="Tastiera e Mouse Esterni"></md-switch>
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center">   
+                    <div class="col-xs-4">STAMPANTE:</div>
+                    <div class="col-xs-8">
+                        <md-switch class="md-primary" name="stampante" ng-model="$ctrl.hardware.stampante" aria-label="Stampante"></md-switch>
+                    </div>
+                </div>
+    
+                <h3>Software Installato</h3>
+    
+                <div layout="row" layout-align="left center">
+                    <div class="col-xs-3">SISTEMA OPERATIVO:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="sistemaOperativo" name="sistemaOperativo" ng-model="$ctrl.software.sistema_operativo">
+                            <option>Microsoft Windows</option>
+                            <option>Unix</option>
+                            <option>GNU/Linux</option>
+                            <option>Mac OS</option>
+                            <option>Ubuntu</option>
+                            <option>Altro</option>
+                        </select>
+                    </div>
+                </div>
+    
+    
+                <div layout="row" layout-align="left center" class="mt-1">
+                    <div class="col-xs-3" for="officeSuite">OFFICE SUITE:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="officeSuite" name="officeSuite" ng-model="$ctrl.software.office_suite">
+                            <option>Nessuno</option>
+                            <option>Microsoft Office</option>
+                            <option>LibreOffice</option>
+                            <option>Altro</option>
+                        </select>
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">
+                    <div class="col-xs-3" for="browser">BROWSER:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="browser" name="browser" ng-model="$ctrl.software.browser">
+                            <option>Nessuno</option>
+                            <option>Google Chrome</option>
+                            <option>Safari</option>
+                            <option>Mozilla Firefox</option>
+                            <option>Microsoft Edge</option>
+                            <option>Altro</option>
+                        </select>
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">
+                    <div class="col-xs-3" for="antivirus">ANTI VIRUS/MALWARE:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="antivirus" name="antivirus" ng-model="$ctrl.software.antivirus">
+                            <option>Nessuno</option>
+                            <option>Norton</option>
+                            <option>McAfee</option>
+                            <option>Avast</option>
+                            <option>Bitdefender</option>
+                            <option>AVG</option>
+                            <option>Altro</option>
+                        </select>
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">
+                    <div class="col-xs-3" for="softwareComunicazione">SOFTWARE DI COMUNICAZIONE:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="softwareComunicazione" name="softwareComunicazione" ng-model="$ctrl.software.software_comunicazione">
+                            <option>Nessuno</option>
+                            <option>Teams</option>
+                            <option>Zoom</option>
+                            <option>Google Meet</option>
+                            <option>Skype</option>
+                            <option>Altro</option>
+                        </select>
+                    </div>
+                </div>
+    
+                <div layout="row" layout-align="left center" class="mt-1">
+                    <div class="col-xs-3" for="softwareCrittografia">CRITTOGRAFIA:</div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="softwareCrittografia" name="softwareCrittografia" ng-model="$ctrl.software.software_crittografia">
+                            <option>Nessuno</option>
+                            <option>VeraCrypt</option>
+                            <option>BitLocker</option>
+                            <option>Altro</option>
+                        </select>
+                    </div>
+                </div>
+    
+    
+                    <!-- Aggiungere ulteriori campi secondo lo stesso pattern -->
+            </div>
+    
         </div>
-
-        <div class="col-xs-8 col-xs-offset-2">
-
-            <div layout="row" layout-align="left center">   
-                <div class="col-xs-3">DATA DI COMPILAZIONE:</div>
-                <div class="col-xs-9">
-                    <input type="month" class="form-control" id="dataCompilazione" name="dataCompilazione" ng-model="$ctrl.hardware.data_compilazione">
-                </div>
-            </div>
-
-            <h3>Caratteristiche Hardware</h3>
-
-            <div layout="row" layout-align="left center">   
-                <div class="col-xs-3">MARCA E MODELLO NOTEBOOK:</div>
-                <div class="col-xs-9">
-                    <input type="text" class="form-control" name="marcaModelloNotebook" ng-model="$ctrl.hardware.marca_modello_notebook">
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">   
-                <div class="col-xs-3">SERIAL NUMBER:</div>
-                <div class="col-xs-9">
-                    <input type="text" class="form-control" id="serialNumber" name="serialNumber" ng-model="$ctrl.hardware.serial_number">
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">   
-                <div class="col-xs-3">PRODUCT KEY:</div>
-                <div class="col-xs-9">
-                    <input type="text" class="form-control" id="productKey" name="productKey" ng-model="$ctrl.hardware.product_key">
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">   
-                <div class="col-xs-3">PROCESSORE (CPU):</div>
-                <div class="col-xs-9">
-                    <input type="text" class="form-control" id="processore" name="processore" ng-model="$ctrl.hardware.processore">
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">   
-                <div class="col-xs-3">MEMORIA RAM - CAPACITÀ:</div>
-                <div class="col-xs-9">
-                    <input type="text" class="form-control" id="memoriaRAM" name="memoriaRAM" ng-model="$ctrl.hardware.memoria_ram">
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">   
-                <div class="col-xs-3">STORAGE - TIPO (HDD/SSD):</div>
-                <div class="col-xs-9">
-                    <input type="text" class="form-control" id="tipoStorage" name="tipoStorage" ng-model="$ctrl.hardware.tipo_storage">
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">   
-                <div class="col-xs-3">STORAGE - CAPACITÀ:</div>
-                <div class="col-xs-9">
-                    <input type="text" class="form-control" id="capacitaStorage" name="capacitaStorage" ng-model="$ctrl.hardware.capacita_storage">
-                </div>
-            </div>
-
-            <h3>Altre Periferiche</h3>
-
-            <div layout="row" layout-align="left center">   
-                <div class="col-xs-4">MONITOR ESTERNO:</div>
-                <div class="col-xs-8">
-                    <md-switch class="md-primary" name="monitorEsterno" ng-model="$ctrl.hardware.monitor_esterno" aria-label="Monitor Esterno"></md-switch>
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center">   
-                <div class="col-xs-4">TASTIERA E MOUSE ESTERNI:</div>
-                <div class="col-xs-8">
-                    <md-switch class="md-primary" name="tastieraMouseEsterni" ng-model="$ctrl.hardware.tastiera_mouse_esterni" aria-label="Tastiera e Mouse Esterni"></md-switch>
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center">   
-                <div class="col-xs-4">STAMPANTE:</div>
-                <div class="col-xs-8">
-                    <md-switch class="md-primary" name="stampante" ng-model="$ctrl.hardware.stampante" aria-label="Stampante"></md-switch>
-                </div>
-            </div>
-
-            <h3>Software Installato</h3>
-
-            <div layout="row" layout-align="left center">
-                <div class="col-xs-3">SISTEMA OPERATIVO:</div>
-                <div class="col-xs-9">
-                    <select class="form-control" id="sistemaOperativo" name="sistemaOperativo" ng-model="$ctrl.software.sistema_operativo">
-                        <option>Microsoft Windows</option>
-                        <option>Unix</option>
-                        <option>GNU/Linux</option>
-                        <option>Mac OS</option>
-                        <option>Ubuntu</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-            </div>
-
-
-            <div layout="row" layout-align="left center" class="mt-1">
-                <div class="col-xs-3" for="officeSuite">OFFICE SUITE:</div>
-                <div class="col-xs-9">
-                    <select class="form-control" id="officeSuite" name="officeSuite" ng-model="$ctrl.software.office_suite">
-                        <option>Nessuno</option>
-                        <option>Microsoft Office</option>
-                        <option>LibreOffice</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">
-                <div class="col-xs-3" for="browser">BROWSER:</div>
-                <div class="col-xs-9">
-                    <select class="form-control" id="browser" name="browser" ng-model="$ctrl.software.browser">
-                        <option>Nessuno</option>
-                        <option>Google Chrome</option>
-                        <option>Safari</option>
-                        <option>Mozilla Firefox</option>
-                        <option>Microsoft Edge</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">
-                <div class="col-xs-3" for="antivirus">ANTI VIRUS/MALWARE:</div>
-                <div class="col-xs-9">
-                    <select class="form-control" id="antivirus" name="antivirus" ng-model="$ctrl.software.antivirus">
-                        <option>Nessuno</option>
-                        <option>Norton</option>
-                        <option>McAfee</option>
-                        <option>Avast</option>
-                        <option>Bitdefender</option>
-                        <option>AVG</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">
-                <div class="col-xs-3" for="softwareComunicazione">SOFTWARE DI COMUNICAZIONE:</div>
-                <div class="col-xs-9">
-                    <select class="form-control" id="softwareComunicazione" name="softwareComunicazione" ng-model="$ctrl.software.software_comunicazione">
-                        <option>Nessuno</option>
-                        <option>Teams</option>
-                        <option>Zoom</option>
-                        <option>Google Meet</option>
-                        <option>Skype</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div layout="row" layout-align="left center" class="mt-1">
-                <div class="col-xs-3" for="softwareCrittografia">CRITTOGRAFIA:</div>
-                <div class="col-xs-9">
-                    <select class="form-control" id="softwareCrittografia" name="softwareCrittografia" ng-model="$ctrl.software.software_crittografia">
-                        <option>Nessuno</option>
-                        <option>VeraCrypt</option>
-                        <option>BitLocker</option>
-                        <option>Altro</option>
-                    </select>
-                </div>
-            </div>
-
-
-                <!-- Aggiungere ulteriori campi secondo lo stesso pattern -->
-        </div>
-
-    </div>
-
     <!-- Inizio sesta riga con buttons salva/crea CV -->
 </div>
 <!-- fine container1 -->
