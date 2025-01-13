@@ -88,102 +88,8 @@ class DataWriter
         return $result;
     }
 
-    // public function save($data, $cleanup) {
-    //     // Verifica delle chiavi richieste e aggiunta di log
-    //     error_log("DEBUG: Avvio della funzione save");
-    
-    //     $inf_data = $data['pInfo'] ?? null;
-    //     $exp_data = $data['exp'] ?? null;
-    //     $for_data = $data['form'] ?? null;
-    //     $lan_data = $data['lang'] ?? null;
-    //     $tag_data = $data['tags'] ?? null;
-    //     $hw_data = $data['hardware'] ?? null;
-    //     $sw_data = $data['software'] ?? null;
-    
-    //     if (!$inf_data) error_log("AVVISO: Mancano dati in 'pInfo'");
-    //     if (!$exp_data) error_log("AVVISO: Mancano dati in 'exp'");
-    //     if (!$for_data) error_log("AVVISO: Mancano dati in 'form'");
-    //     if (!$lan_data) error_log("AVVISO: Mancano dati in 'lang'");
-    //     if (!$tag_data) error_log("AVVISO: Mancano dati in 'tags'");
-    //     if (!$hw_data) error_log("AVVISO: Mancano dati in 'hardware'");
-    //     if (!$sw_data) error_log("AVVISO: Mancano dati in 'software'");
-    
-    //     $res = FALSE;
-    //     $userid = -1;
-    
-    //     if ($inf_data && $exp_data && $for_data && $lan_data && $tag_data && $hw_data && $sw_data) {
-    //         $db = begin();
-    //         error_log("DEBUG: Connessione al database avviata");
-    //         $res = TRUE;
-    
-    //         if ($cleanup) {
-    //             $userid = $inf_data['id'];
-    //             error_log("DEBUG: Cleanup richiesto per userid: $userid");
-    //             $res = ($this->deleteDatiImp($userid, $db) == 200);
-    //         }
-    
-    //         if ($res) {
-    //             $res = FALSE;
-    //             $userid = $this->salvaPInfo($db, $inf_data, $userid);
-    //             error_log("DEBUG: salvaPInfo risultato userid: $userid");
-    
-    //             if ($userid != -1) {
-    //                 if ($this->salvaExp($db, $exp_data, $userid) == 200) {
-    //                     error_log("DEBUG: salvaExp completato");
-    //                     if ($this->salvaForm($db, $for_data, $userid) == 200) {
-    //                         error_log("DEBUG: salvaForm completato");
-    //                         if ($this->salvaLang($db, $lan_data, $userid) == 200) {
-    //                             error_log("DEBUG: salvaLang completato");
-    
-    //                             // Salvataggio hardware e software separati
-    //                             if ($this->salvaHardware($db, $hw_data, $userid) == 200) {
-    //                                 error_log("DEBUG: salvaHardware completato");
-    //                                 if ($this->salvaSoftware($db, $sw_data, $userid) == 200) {
-    //                                     error_log("DEBUG: salvaSoftware completato");
-    
-    //                                     $res = ($this->salvaTag($db, $tag_data, $userid) == 200);
-    //                                     if ($res) {
-    //                                         error_log("DEBUG: salvaTag completato");
-    //                                     } else {
-    //                                         error_log("ERRORE: salvaTag fallito");
-    //                                     }
-    //                                 } else {
-    //                                     error_log("ERRORE: salvaSoftware fallito");
-    //                                 }
-    //                             } else {
-    //                                 error_log("ERRORE: salvaHardware fallito");
-    //                             }
-    //                         } else {
-    //                             error_log("ERRORE: salvaLang fallito");
-    //                         }
-    //                     } else {
-    //                         error_log("ERRORE: salvaForm fallito");
-    //                     }
-    //                 } else {
-    //                     error_log("ERRORE: salvaExp fallito");
-    //                 }
-    //             } else {
-    //                 error_log("ERRORE: salvaPInfo ha restituito userid -1");
-    //             }
-    //         }
-    
-    //         if ($res) {
-    //             commit($db);
-    //             error_log("DEBUG: Transazione completata con successo");
-    //         } else {
-    //             $userid = -1;
-    //             rollback($db);
-    //             error_log("ERRORE: Transazione annullata");
-    //         }
-    //     } else {
-    //         error_log("ERRORE: Dati mancanti per la funzione save");
-    //     }
-    
-    //     return $userid;
-    // }
-
     public function save($data, $cleanup) {
-        // Log di avvio della funzione
+        // Verifica delle chiavi richieste e aggiunta di log
         error_log("DEBUG: Avvio della funzione save");
     
         $inf_data = $data['pInfo'] ?? null;
@@ -202,56 +108,151 @@ class DataWriter
         if (!$hw_data) error_log("AVVISO: Mancano dati in 'hardware'");
         if (!$sw_data) error_log("AVVISO: Mancano dati in 'software'");
     
-        $res = false;
+        $res = FALSE;
         $userid = -1;
     
         if ($inf_data && $exp_data && $for_data && $lan_data && $tag_data && $hw_data && $sw_data) {
             $db = begin();
             error_log("DEBUG: Connessione al database avviata");
-            $res = true;
+            $res = TRUE;
     
-            error_log("DEBUG: Cleanup richiesto. Valore di \$cleanup: " . var_export($cleanup, true));
             if ($cleanup) {
                 $userid = $inf_data['id'];
                 error_log("DEBUG: Cleanup richiesto per userid: $userid");
                 $res = ($this->deleteDatiImp($userid, $db) == 200);
             }
-            
+    
             if ($res) {
+                $res = FALSE;
                 $userid = $this->salvaPInfo($db, $inf_data, $userid);
+                error_log("DEBUG: salvaPInfo risultato userid: $userid");
+    
                 if ($userid != -1) {
-                    if ($this->salvaExp($db, $exp_data, $userid) == 200 &&
-                        $this->salvaForm($db, $for_data, $userid) == 200 &&
-                        $this->salvaLang($db, $lan_data, $userid) == 200 &&
-                        $this->salvaHardware($db, $hw_data, $userid) == 200 &&
-                        $this->salvaSoftware($db, $sw_data, $userid) == 200 &&
-                        $this->salvaTag($db, $tag_data, $userid) == 200) {
-                        commit($db);
-                        error_log("DEBUG: Transazione completata con successo");
-                        $res = true;
+                    if ($this->salvaExp($db, $exp_data, $userid) == 200) {
+                        error_log("DEBUG: salvaExp completato");
+                        if ($this->salvaForm($db, $for_data, $userid) == 200) {
+                            error_log("DEBUG: salvaForm completato");
+                            if ($this->salvaLang($db, $lan_data, $userid) == 200) {
+                                error_log("DEBUG: salvaLang completato");
+    
+                                // Salvataggio hardware e software separati
+                                if ($this->salvaHardware($db, $hw_data, $userid) == 200) {
+                                    error_log("DEBUG: salvaHardware completato");
+                                    if ($this->salvaSoftware($db, $sw_data, $userid) == 200) {
+                                        error_log("DEBUG: salvaSoftware completato");
+    
+                                        $res = ($this->salvaTag($db, $tag_data, $userid) == 200);
+                                        if ($res) {
+                                            error_log("DEBUG: salvaTag completato");
+                                        } else {
+                                            error_log("ERRORE: salvaTag fallito");
+                                        }
+                                    } else {
+                                        error_log("ERRORE: salvaSoftware fallito");
+                                    }
+                                } else {
+                                    error_log("ERRORE: salvaHardware fallito");
+                                }
+                            } else {
+                                error_log("ERRORE: salvaLang fallito");
+                            }
+                        } else {
+                            error_log("ERRORE: salvaForm fallito");
+                        }
                     } else {
-                        rollback($db);
-                        error_log("ERRORE: Errore durante il salvataggio di una delle tabelle.");
-                        $res = false;
+                        error_log("ERRORE: salvaExp fallito");
                     }
                 } else {
                     error_log("ERRORE: salvaPInfo ha restituito userid -1");
-                    $res = false;
                 }
-            } else {
-                error_log("ERRORE: Cleanup fallito.");
             }
     
-            if (!$res) {
+            if ($res) {
+                commit($db);
+                error_log("DEBUG: Transazione completata con successo");
+            } else {
+                $userid = -1;
                 rollback($db);
-                error_log("DEBUG: Rollback eseguito.");
+                error_log("ERRORE: Transazione annullata");
             }
         } else {
-            error_log("ERRORE: Dati mancanti per la funzione save.");
+            error_log("ERRORE: Dati mancanti per la funzione save");
         }
     
         return $userid;
     }
+
+    // public function save($data, $cleanup) {
+    //     // Log di avvio della funzione
+    //     error_log("DEBUG: Avvio della funzione save");
+    
+    //     $inf_data = $data['pInfo'] ?? null;
+    //     $exp_data = $data['exp'] ?? null;
+    //     $for_data = $data['form'] ?? null;
+    //     $lan_data = $data['lang'] ?? null;
+    //     $tag_data = $data['tags'] ?? null;
+    //     $hw_data = $data['hardware'] ?? null;
+    //     $sw_data = $data['software'] ?? null;
+    
+    //     if (!$inf_data) error_log("AVVISO: Mancano dati in 'pInfo'");
+    //     if (!$exp_data) error_log("AVVISO: Mancano dati in 'exp'");
+    //     if (!$for_data) error_log("AVVISO: Mancano dati in 'form'");
+    //     if (!$lan_data) error_log("AVVISO: Mancano dati in 'lang'");
+    //     if (!$tag_data) error_log("AVVISO: Mancano dati in 'tags'");
+    //     if (!$hw_data) error_log("AVVISO: Mancano dati in 'hardware'");
+    //     if (!$sw_data) error_log("AVVISO: Mancano dati in 'software'");
+    
+    //     $res = false;
+    //     $userid = -1;
+    
+    //     if ($inf_data && $exp_data && $for_data && $lan_data && $tag_data && $hw_data && $sw_data) {
+    //         $db = begin();
+    //         error_log("DEBUG: Connessione al database avviata");
+    //         $res = true;
+    
+    //         error_log("DEBUG: Cleanup richiesto. Valore di \$cleanup: " . var_export($cleanup, true));
+    //         if ($cleanup) {
+    //             $userid = $inf_data['id'];
+    //             error_log("DEBUG: Cleanup richiesto per userid: $userid");
+    //             $res = ($this->deleteDatiImp($userid, $db) == 200);
+    //         }
+            
+    //         if ($res) {
+    //             $userid = $this->salvaPInfo($db, $inf_data, $userid);
+    //             if ($userid != -1) {
+    //                 if ($this->salvaExp($db, $exp_data, $userid) == 200 &&
+    //                     $this->salvaForm($db, $for_data, $userid) == 200 &&
+    //                     $this->salvaLang($db, $lan_data, $userid) == 200 &&
+    //                     $this->salvaHardware($db, $hw_data, $userid) == 200 &&
+    //                     $this->salvaSoftware($db, $sw_data, $userid) == 200 &&
+    //                     $this->salvaTag($db, $tag_data, $userid) == 200) {
+    //                     commit($db);
+    //                     error_log("DEBUG: Transazione completata con successo");
+    //                     $res = true;
+    //                 } else {
+
+    //                     rollback($db);
+    //                     error_log("ERRORE: Errore durante il salvataggio di una delle tabelle.");
+    //                     $res = false;
+    //                 }
+    //             } else {
+    //                 error_log("ERRORE: salvaPInfo ha restituito userid -1");
+    //                 $res = false;
+    //             }
+    //         } else {
+    //             error_log("ERRORE: Cleanup fallito.");
+    //         }
+    
+    //         if (!$res) {
+    //             rollback($db);
+    //             error_log("DEBUG: Rollback eseguito.");
+    //         }
+    //     } else {
+    //         error_log("ERRORE: Dati mancanti per la funzione save.");
+    //     }
+    
+    //     return $userid;
+    // }
     
     
     private function deleteDatiImp($id, $db) {
@@ -380,161 +381,82 @@ class DataWriter
         return 200;
     }
 
-    // private function salvaHardware($db, $data, $userid) {
-    //     try {
-    //         error_log("Inizio salvaHardware per userid: $userid");
-    
-    //         // Verifica se esiste un record nella tabella hardware per l'utente
-    //         $stmt = $db->prepare("SELECT id FROM hardware WHERE userid = ?");
-    //         if (!$stmt) {
-    //             throw new Exception("Preparazione della query SELECT hardware fallita: " . $db->error);
-    //         }
-    //         $stmt->bind_param('i', $userid);
-    //         $stmt->execute();
-    //         $stmt->store_result();
-    
-    //         if ($stmt->num_rows > 0) {
-    //             error_log("Record hardware esistente trovato, procedo con l'aggiornamento per userid: $userid.");
-    //             $stmt->close();
-    //             // Query di aggiornamento
-    //             $stmt = $db->prepare("
-    //                 UPDATE hardware
-    //                 SET data_compilazione = ?, 
-    //                     marca_modello_notebook = ?, 
-    //                     serial_number = ?, 
-    //                     product_key = ?, 
-    //                     processore = ?, 
-    //                     memoria_ram = ?, 
-    //                     tipo_storage = ?, 
-    //                     capacita_storage = ?, 
-    //                     monitor_esterno = ?, 
-    //                     tastiera_mouse_esterni = ?, 
-    //                     stampante = ?
-    //                 WHERE userid = ?
-    //             ");
-    //         } else {
-    //             error_log("Nessun record hardware trovato, procedo con l'inserimento per userid: $userid.");
-    //             $stmt->close();
-    //             // Query di inserimento
-    //             $stmt = $db->prepare("
-    //                 INSERT INTO hardware (
-    //                     userid, 
-    //                     data_compilazione, 
-    //                     marca_modello_notebook, 
-    //                     serial_number, 
-    //                     product_key, 
-    //                     processore, 
-    //                     memoria_ram, 
-    //                     tipo_storage, 
-    //                     capacita_storage, 
-    //                     monitor_esterno, 
-    //                     tastiera_mouse_esterni, 
-    //                     stampante
-    //                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    //             ");
-    //         }
-    
-    //         if (!$stmt) {
-    //             throw new Exception("Preparazione della query hardware fallita: " . $db->error);
-    //         }
-    
-    //         // Assegna i valori a variabili locali
-    //         $dataCompilazione = $data['data_compilazione'] ?? null;
-    //         $marcaModelloNotebook = $data['marca_modello_notebook'] ?? null;
-    //         $serialNumber = $data['serial_number'] ?? null;
-    //         $productKey = $data['product_key'] ?? null;
-    //         $processore = $data['processore'] ?? null;
-    //         $memoriaRAM = $data['memoria_ram'] ?? null;
-    //         $tipoStorage = $data['tipo_storage'] ?? null;
-    //         $capacitaStorage = $data['capacita_storage'] ?? null;
-    //         $monitorEsterno = $data['monitor_esterno'] ?? null;
-    //         $tastieraMouseEsterni = $data['tastiera_mouse_esterni'] ?? null;
-    //         $stampante = $data['stampante'] ?? null;
-    
-    //         // Associa i parametri alla query usando variabili
-    //         $stmt->bind_param(
-    //             'isssssiiisii',
-    //             $userid,
-    //             $dataCompilazione,
-    //             $marcaModelloNotebook,
-    //             $serialNumber,
-    //             $productKey,
-    //             $processore,
-    //             $memoriaRAM,
-    //             $tipoStorage,
-    //             $capacitaStorage,
-    //             $monitorEsterno,
-    //             $tastieraMouseEsterni,
-    //             $stampante
-    //         );
-    
-    //         if (!$stmt->execute()) {
-    //             throw new Exception("Errore durante l'esecuzione della query hardware: " . $stmt->error);
-    //         }
-    
-    //         error_log("Query hardware eseguita con successo per userid: $userid.");
-    //         $stmt->close();
-    //         return 200; // Successo
-    //     } catch (Exception $e) {
-    //         error_log("Errore in salvaHardware per userid: $userid. Messaggio: " . $e->getMessage());
-    //         return 500; // Fallimento
-    //     }
-    // }
-
     private function salvaHardware($db, $data, $userid) {
         try {
             error_log("Inizio salvaHardware per userid: $userid");
     
-            // Assegna i valori a variabili locali
-            $dataCompilazione = $data['data_compilazione'] ?? null;
-            $marcaModelloNotebook = $data['marca_modello_notebook'] ?? null;
-            $serialNumber = $data['serial_number'] ?? null;
-            $productKey = $data['product_key'] ?? null;
-            $processore = $data['processore'] ?? null;
-            $memoriaRAM = $data['memoria_ram'] ?? null;
-            $tipoStorage = $data['tipo_storage'] ?? null;
-            $capacitaStorage = $data['capacita_storage'] ?? null;
-            $monitorEsterno = isset($data['monitor_esterno']) ? (int)$data['monitor_esterno'] : 0;
-            $tastieraMouseEsterni = isset($data['tastiera_mouse_esterni']) ? (int)$data['tastiera_mouse_esterni'] : 0;
-            $stampante = isset($data['stampante']) ? (int)$data['stampante'] : 0;
+            // Verifica se esiste un record nella tabella hardware per l'utente utilizzando userid
+            $stmt = $db->prepare("SELECT userid FROM hardware WHERE userid = ?");
+            if (!$stmt) {
+                throw new Exception("Preparazione della query SELECT hardware fallita: " . $db->error);
+            }
+            $stmt->bind_param('i', $userid);
+            $stmt->execute();
+            $stmt->store_result();
     
-            // Query di inserimento o aggiornamento
-            $stmt = $db->prepare("
-                INSERT INTO hardware (
-                    userid, 
-                    data_compilazione, 
-                    marca_modello_notebook, 
-                    serial_number, 
-                    product_key, 
-                    processore, 
-                    memoria_ram, 
-                    tipo_storage, 
-                    capacita_storage, 
-                    monitor_esterno, 
-                    tastiera_mouse_esterni, 
-                    stampante
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                    data_compilazione = VALUES(data_compilazione),
-                    marca_modello_notebook = VALUES(marca_modello_notebook),
-                    serial_number = VALUES(serial_number),
-                    product_key = VALUES(product_key),
-                    processore = VALUES(processore),
-                    memoria_ram = VALUES(memoria_ram),
-                    tipo_storage = VALUES(tipo_storage),
-                    capacita_storage = VALUES(capacita_storage),
-                    monitor_esterno = VALUES(monitor_esterno),
-                    tastiera_mouse_esterni = VALUES(tastiera_mouse_esterni),
-                    stampante = VALUES(stampante)
-            ");
+            if ($stmt->num_rows > 0) {
+                error_log("Record hardware esistente trovato, procedo con l'aggiornamento per userid: $userid.");
+                $stmt->close();
+                // Query di aggiornamento
+                $stmt = $db->prepare("
+                    UPDATE hardware
+                    SET data_compilazione = ?, 
+                        marca_modello_notebook = ?, 
+                        serial_number = ?, 
+                        product_key = ?, 
+                        processore = ?, 
+                        memoria_ram = ?, 
+                        tipo_storage = ?, 
+                        capacita_storage = ?, 
+                        monitor_esterno = ?, 
+                        tastiera_mouse_esterni = ?, 
+                        stampante = ?
+                    WHERE userid = ?
+                ");
+            } else {
+                error_log("Nessun record hardware trovato, procedo con l'inserimento per userid: $userid.");
+                $stmt->close();
+                // Query di inserimento
+                $stmt = $db->prepare("
+                    INSERT INTO hardware (
+                        userid, 
+                        data_compilazione, 
+                        marca_modello_notebook, 
+                        serial_number, 
+                        product_key, 
+                        processore, 
+                        memoria_ram, 
+                        tipo_storage, 
+                        capacita_storage, 
+                        monitor_esterno, 
+                        tastiera_mouse_esterni, 
+                        stampante
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+            }
     
             if (!$stmt) {
                 throw new Exception("Preparazione della query hardware fallita: " . $db->error);
             }
     
+            // Assegna i valori a variabili locali
+            $dataCompilazione = $data['data_compilazione'] ?? date('Y-m-d');
+            $marcaModelloNotebook = $data['marca_modello_notebook'] ?? 'Sconosciuto';
+            $serialNumber = $data['serial_number'] ?? 'N/D';
+            $productKey = $data['product_key'] ?? 'N/D';
+            $processore = $data['processore'] ?? 'N/D';
+            $memoriaRAM = $data['memoria_ram'] ?? '0 GB';
+            $tipoStorage = $data['tipo_storage'] ?? 'N/D';
+            $capacitaStorage = $data['capacita_storage'] ?? '0 GB';
+            $monitorEsterno = isset($data['monitor_esterno']) ? $data['monitor_esterno'] : 0;
+            $tastieraMouseEsterni = isset($data['tastiera_mouse_esterni']) ? $data['tastiera_mouse_esterni'] : 0;
+            $stampante = isset($data['stampante']) ? $data['stampante'] : 0;
+    
+
+            error_log("Valori da salvare: data_compilazione=$dataCompilazione, marca_modello_notebook=$marcaModelloNotebook, serial_number=$serialNumber, product_key=$productKey, processore=$processore, memoria_ram=$memoriaRAM, tipo_storage=$tipoStorage, capacita_storage=$capacitaStorage, monitor_esterno=$monitorEsterno, tastiera_mouse_esterni=$tastieraMouseEsterni, stampante=$stampante");
             // Associa i parametri alla query usando variabili
             $stmt->bind_param(
-                'isssssiiisii',
+                'issssssssiii',
                 $userid,
                 $dataCompilazione,
                 $marcaModelloNotebook,
@@ -546,7 +468,7 @@ class DataWriter
                 $capacitaStorage,
                 $monitorEsterno,
                 $tastieraMouseEsterni,
-                $stampante
+                $stampante,
             );
     
             if (!$stmt->execute()) {
@@ -626,82 +548,6 @@ class DataWriter
             return 500; // Fallimento
         }
     }
-    
-    // private function salvaSoftware($db, $data, $userid) {
-    //     try {
-    //         // Log iniziale
-    //         error_log("Inizio salvaSoftware per userid: $userid");
-    
-    //         // Controlla se esiste già un record per l'utente nella tabella software
-    //         $stmt = $db->prepare('SELECT id FROM software WHERE userid = ?');
-    //         $stmt->bind_param('i', $userid);
-    //         $stmt->execute();
-    //         $stmt->store_result();
-    
-    //         if ($stmt->num_rows > 0) {
-    //             // Record esistente, aggiornamento
-    //             error_log("Trovato record software esistente per userid: $userid. Procedo con l'aggiornamento.");
-    //             $stmt = $db->prepare('
-    //                 UPDATE software 
-    //                 SET sistema_operativo = ?, 
-    //                     office_suite = ?, 
-    //                     browser = ?, 
-    //                     antivirus = ?, 
-    //                     software_comunicazione = ?, 
-    //                     software_crittografia = ?
-    //                 WHERE userid = ?
-    //             ');
-    //         } else {
-    //             // Nessun record esistente, inserimento
-    //             error_log("Nessun record software esistente per userid: $userid. Procedo con l'inserimento.");
-    //             $stmt = $db->prepare('
-    //                 INSERT INTO software (
-    //                     userid, 
-    //                     sistema_operativo, 
-    //                     office_suite, 
-    //                     browser, 
-    //                     antivirus, 
-    //                     software_comunicazione, 
-    //                     software_crittografia
-    //                 ) VALUES (?, ?, ?, ?, ?, ?, ?)
-    //             ');
-    //         }
-    
-    //         // Variabili locali per i valori da bindare
-    //         $sistema_operativo = $data['sistema_operativo'] ?? null;
-    //         $office_suite = $data['office_suite'] ?? null;
-    //         $browser = $data['browser'] ?? null;
-    //         $antivirus = $data['antivirus'] ?? null;
-    //         $software_comunicazione = $data['software_comunicazione'] ?? null;
-    //         $software_crittografia = $data['software_crittografia'] ?? null;
-    
-    //         // Associa i parametri alla query usando variabili
-    //         $stmt->bind_param(
-    //             'issssss',
-    //             $userid,
-    //             $sistema_operativo,
-    //             $office_suite,
-    //             $browser,
-    //             $antivirus,
-    //             $software_comunicazione,
-    //             $software_crittografia
-    //         );
-    
-    //         // Esecuzione della query
-    //         if (!$stmt->execute()) {
-    //             error_log("Errore durante l'esecuzione della query salvaSoftware per userid: $userid. Errore: " . $stmt->error);
-    //             $stmt->close();
-    //             return 500;
-    //         }
-    
-    //         error_log("Query eseguita con successo per userid: $userid.");
-    //         $stmt->close();
-    //     } catch (Exception $e) {
-    //         error_log("Errore in salvaSoftware per userid: $userid. Messaggio: " . $e->getMessage());
-    //         return 500;
-    //     }
-    //     return 200;
-    // }
         
     private function salvaTag($db, $data, $userid) {
         try {

@@ -5,9 +5,6 @@ angular.module('dataImp')
 
         var dati, /*foto,*/ path;
 
-        self.hardware = {};
-        self.software = {};
-
         self.getDati = function(saving = false) {
             if (saving) {
                 var data = {};
@@ -42,28 +39,40 @@ angular.module('dataImp')
                 }, this);
 
 
-
                 data.tags = angular.copy(dati.tags).sort((a, b) => a.tag.toLowerCase() > b.tag.toLowerCase());
                 
+                console.log('dati hardware', dati.hardware);
                 data.hardware = angular.copy(dati.hardware);
-                
-                if (data.hardware && data.hardware.data_compilazione) {
-                    var date = new Date(data.hardware.data_compilazione);
-                
-                    var year = date.getFullYear();
-                    var month = (date.getMonth() + 1).toString().padStart(2, '0');
-                    var day = date.getDate().toString().padStart(2, '0');
-                
-                    data.hardware.data_compilazione = `${year}-${month}-${day}`;
-                    console.log('data', data.hardware.data_compilazione);
-                }
 
-                data.hardware.monitor_esterno = intToBool(data.hardware.monitor_esterno);
-                data.hardware.stampante = intToBool(data.hardware.stampante);
-                data.hardware.tastiera_mouse_esterni = intToBool(data.hardware.tastiera_mouse_esterni);
+                console.log('data hardware', data.hardware);
+
+                // if (!data.hardware.memoria_ram) data.hardware.memoria_ram = "N/A";
+                // if (!data.hardware.tipo_storage) data.hardware.tipo_storage = "N/A";
+                // if (!data.hardware.capacita_storage) data.hardware.capacita_storage = "0";
+                // if (data.hardware.monitor_esterno === undefined || data.hardware.monitor_esterno === null) {
+                //     data.hardware.monitor_esterno = 0;
+                // }
+                // if (data.hardware.tastiera_mouse_esterni === undefined || data.hardware.tastiera_mouse_esterni === null) {
+                //     data.hardware.tastiera_mouse_esterni = 0;
+                // }
+                
+                // if (data.hardware && data.hardware.data_compilazione) {
+                //     var date = new Date(data.hardware.data_compilazione);
+                
+                //     var year = date.getFullYear();
+                //     var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                //     var day = date.getDate().toString().padStart(2, '0');
+                
+                //     data.hardware.data_compilazione = `${year}-${month}-${day}`;
+                // }
+
+                // data.hardware.monitor_esterno = boolToInt(dati.hardware.monitor_esterno);
+                // data.hardware.tastiera_mouse_esterni = boolToInt(dati.hardware.tastiera_mouse_esterni);
+                // data.hardware.stampante = boolToInt(dati.hardware.stampante);
 
                 data.software = angular.copy(dati.software);
 
+                console.log('oggetto data inviato', data);
                 return data;
             }
             return dati;

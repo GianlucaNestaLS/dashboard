@@ -59,14 +59,35 @@ angular.module('impiegato')
                     if (email_pers && lingue) {
                         const dati = datiPagina();
 
-
-                        // const datiHardware = getDatiHardware();
-                        // console.log('datiHardware', datiHardware);
-                        // datiHardwareSoftware.dataCompilazione = datiHardwareSoftware.dataCompilazione.toISOString().split('T')[0];
-                        // console.log('datiHardwareSoftware', datiHardwareSoftware);
-                        // dataImp.hardwareSoftware = datiHardwareSoftware;
-
+                        const datiHardware = getDatiHardware();
+                        console.log('Dati combinati per il salvataggio:', dati);
                 
+                        dati.hardware = datiHardware;
+
+                        if (!dati.hardware.memoria_ram) dati.hardware.memoria_ram = "";
+                        if (!dati.hardware.tipo_storage) dati.hardware.tipo_storage = "";
+                        if (!dati.hardware.capacita_storage) dati.hardware.capacita_storage = "";
+                        if (dati.hardware.monitor_esterno === undefined || dati.hardware.monitor_esterno === null) {
+                            dati.hardware.monitor_esterno = 0;
+                        }
+                        if (dati.hardware.tastiera_mouse_esterni === undefined || dati.hardware.tastiera_mouse_esterni === null) {
+                            dati.hardware.tastiera_mouse_esterni = 0;
+                        }
+                        
+                        if (dati.hardware && dati.hardware.data_compilazione) {
+                            var date = new Date(dati.hardware.data_compilazione);
+                        
+                            var year = date.getFullYear();
+                            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                            var day = date.getDate().toString().padStart(2, '0');
+                        
+                            dati.hardware.data_compilazione = `${year}-${month}-${day}`;
+                        }
+        
+                        dati.hardware.monitor_esterno = boolToInt(dati.hardware.monitor_esterno);
+                        dati.hardware.tastiera_mouse_esterni = boolToInt(dati.hardware.tastiera_mouse_esterni);
+                        dati.hardware.stampante = boolToInt(dati.hardware.stampante);
+
                         impiegatoOp.salvaDati(dati).then(function (result) {
                             console.log('impiegatoOp.salvaDati', result);
                             if (result.data.forbidden) {
@@ -86,19 +107,32 @@ angular.module('impiegato')
                 });
 
                 function getDatiHardware() {
-                    return {
-                        dataCompilazione: self.hardware.data_compilazione,
-                        marcaModelloNotebook: self.hardware.marca_modello_notebook,
-                        serialNumber: self.hardware.serial_number,
-                        productKey: self.hardware.product_key,
+                    const datiHardware = {
+                        data_compilazione: self.hardware.data_compilazione,
+                        marca_modello_notebook: self.hardware.marca_modello_notebook,
+                        serial_number: self.hardware.serial_number,
+                        product_key: self.hardware.product_key,
                         processore: self.hardware.processore,
-                        memoriaRam: self.hardware.memoria_ram,
-                        tipoStorage: self.hardware.tipo_storage,
-                        capacitaStorage: self.hardware.capacita_storage,
-                        monitorEsterno: self.hardware.monitor_esterno,
-                        tastieraMouseEsterni: self.hardware.tastiera_mouse_esterni,
+                        memoria_ram: self.hardware.memoria_ram,
+                        tipo_storage: self.hardware.tipo_storage,
+                        capacita_storage: self.hardware.capacita_storage,
+                        monitor_esterno: self.hardware.monitor_esterno,
+                        tastiera_mouse_esterni: self.hardware.tastiera_mouse_esterni,
                         stampante: self.hardware.stampante
                     };
+
+                    console.log('Dati Hardware da inviare:', datiHardware);
+
+                    // Aggiorna dataImp.hardware
+                    dataImp.hardware = datiHardware;
+
+                    console.log('Dati Hardware aggiornati:', dataImp.hardware);
+
+                    return datiHardware;
+                }
+
+                function boolToInt(bb) {
+                    return (bb ? 1 : 0);
                 }
 
                 function checkEmailPers() {
@@ -211,14 +245,14 @@ angular.module('impiegato')
                         } else {
                             dataImp.setDati(result.data);
                 
-                            if (result.data.pInfo) {
+                            // if (result.data.pInfo) {
                                 self.pInfo = result.data.pInfo;
                                 self.pInfo.dipendente = intToBool(self.pInfo.dipendente);
                                 self.pInfo.selezionato = intToBool(self.pInfo.selezionato);
                                 $rootScope.title = $state.current.title + self.pInfo.nome + ' ' + self.pInfo.cognome;
-                            } else {
-                                console.error('pInfo is null or undefined');
-                            }
+                            // } else {
+                            //     console.error('pInfo is null or undefined');
+                            // }
                             self.exp = dataImp.getDati().exp;
                             self.exp.forEach(function (element) {
                                 element.selezionato = intToBool(element.selezionato);
