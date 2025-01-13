@@ -1,7 +1,4 @@
 angular.module('sidebarHome')
-    // .config(['$animateProvider', function ($animateProvider) {
-    //     $animateProvider.classNameFilter(/^(?!.*submenu).*$/); // Esclude le animazioni per il sottomenu
-    // }])
     .component('sidebarHome', {
         templateUrl: 'app/sidebar-home/sidebar-home.template.html',
         controller: ['token', '$state', '$location', '$timeout', function (token, $state, $location, $timeout) {
@@ -33,17 +30,5 @@ angular.module('sidebarHome')
                 }
                 // console.log('[toggleSubmenu] Stato aggiornato - activeSubmenu:', self.activeSubmenu);
             };
-
-            // Funzione per gestire l'inizializzazione del componente
-            self.$onInit = function () {
-                // console.log('[onInit] Inizializzazione del componente');
-                self.updateStateForMenu('stats'); // Imposta lo stato predefinito
-            };
-
-            // Gestisce eventuali cambiamenti nel componente
-            // self.$onChanges = function () {
-                // console.log('[onChanges] Cambiamenti rilevati nel componente');
-            // };
-
         }]
     });
