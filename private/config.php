@@ -37,7 +37,7 @@ class Config
         return self::PROFILE_PICS_PATH;
     }
 
-    const SESSION_EXP = 3600;
+    const SESSION_EXP = 3600 * 2;
 
     public static function SessionExp() {
         return self::SESSION_EXP;
