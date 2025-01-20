@@ -1,0 +1,91 @@
+<!-- menu sinistro/destro in anteprima di stampa -->
+<div class="col-xs-1" id="destra">
+    <div class="dropdown">
+        <button class="btn btn-lg btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-cog"></span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <a id="pageBreak" ng-click="pageBreak = !pageBreak">
+                    <img src="app/img/page_break_icon.png">Page Break
+                    <span class="glyphicon glyphicon-ok" ng-show="pageBreak"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="dropdown">
+        <button id="stampaCV" class="btn btn-lg btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-print"></span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li ng-click="$ctrl.print()">
+                <a>Stampa</a>
+            </li>
+            <li ng-click="$ctrl.print_cliente()" ng-if="$ctrl.profilo != 'USER'">
+                <a>Stampa per cliente</a>
+            </li>
+            <li ng-click="$ctrl.print_anonima()" ng-if="$ctrl.profilo != 'USER'">
+                <a>Stampa anonima</a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<div class="col-xs-1" id="sinistra">
+
+    <button type="button" class="btn btn-lg btn-default" id="back" ng-click="$ctrl.back()">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+    </button>
+
+</div>
+
+<!-- inizio container2 -->
+
+<div class="container" id="cont2">
+
+    <div class="row">
+
+        <div class="col-xs-3 lato_sinistro">
+
+            <header>
+                <img class="logo" ng-src="{{$ctrl.logo}}">
+            </header>
+
+            <div id="spazio_fotoCV" class="spazio_fotoCV">
+                <img id="fotoCV" class="fotoCV" ng-src="{{$ctrl.foto}}">
+            </div>
+
+            <div class="dati">
+                <p id="nomeCV" class="maxiCV" ng-bind="$ctrl.pInfo.nome"></p>
+                <p id="cognomeCV" class="iperCV" ng-bind="$ctrl.pInfo.cognome" check-width-cv></p>
+                <p id="posizione_lavorativa" ng-bind="$ctrl.pInfo.mansione"></p>
+            </div>
+
+            <div class="contatti">
+                <p id="emailCV" ng-if="$ctrl.pInfo.dipendente" ng-bind="$ctrl.pInfo.username"></p>
+
+            </div>
+        </div>
+
+        <div class="col-xs-9 lato_destro">
+            <div class="blocco" ng-if="($ctrl.exp | filter:{selezionato:true}).length != 0">
+                <h4>RIEPILOGO</h4>
+                <div ng-if="$ctrl.isLoading" 
+                     class="d-flex align-items-center" 
+                     style="display: flex; align-items: center; justify-content: center; height: 100px;">
+                    <div class="loader" style="margin-right: 10px;">
+                        <span class="spinner"></span>
+                    </div>
+                    <p style="color: black; margin: 0;">Caricamento in corso...</p>
+                </div>
+                <div ng-bind-html="$ctrl.extractedSummary"></div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>

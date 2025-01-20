@@ -76,6 +76,12 @@ angular.module('homeApp')
                 template: '<preview></preview>',
                 title: 'CV aziendali - Anteprima stampa'
             })
+
+            .state('summaryState', {
+                url: '^/summary',
+                template: '<summary></summary>',
+                title: 'CV aziendali - Anteprima sommario'
+            })
             
             .state('logout.sidebarHome.societa', {
                 url: '^/societa',

@@ -21,6 +21,7 @@ angular.module('homeApp', [
     'sidebarImpiegato',
     'impiegato',
     'preview',
+    'summary',
     'societa',
     'primoAccesso'
 ]);

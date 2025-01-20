@@ -378,12 +378,8 @@ angular.module('tableImpiegati')
 
 
             /* ----------------------------------- UPLOAD CV ---------------------------------- */    
-            function intToBool(int) {
-                return int == true;
-            }
-
             self.isLoading = false;
-
+          
             self.uploadCv = function (file) {
                 if (!file || file.length === 0) {
                     toastErr('Seleziona un file valido.');
@@ -418,11 +414,12 @@ angular.module('tableImpiegati')
                             opsImpiegati.processCvWithGoogle(fullText).then(function (response) {
                                 if (response.data && response.data.candidates && response.data.candidates[0] && response.data.candidates[0].content && response.data.candidates[0].content.parts) {
                                     var extractedText = response.data.candidates[0].content.parts[0].text;
+                                    console.log('Extracted text:', extractedText);
             
                                     try {
                                         if (isValidJson(extractedText)) {
                                             var parsedData = JSON.parse(extractedText);
-                                            // console.log('Parsed data:', parsedData);
+                                            console.log('Parsed data:', parsedData);
             
                                             opsImpiegati.importa(extractedText).then(function (result) {
                                                 if (result.data.forbidden) {
@@ -448,23 +445,6 @@ angular.module('tableImpiegati')
                                                             };
                                                             self.impiegati.push(tmp);
                                                         }
-                                                        // console.log('impiegati', self.impiegati);
-                                                        // var newImpiegato = {
-                                                        //     nome: parsedData[key].pInfo.nome,
-                                                        //     cognome: parsedData[key].pInfo.cognome,
-                                                        //     email_pers: parsedData[key].pInfo.email_pers,
-                                                        //     // dipendente: intToBool(parsedData[key].pInfo.dipendente),
-                                                        //     dominio: parsedData[key].pInfo.dominio,
-                                                        //     id_soc: parsedData[key].pInfo.id_soc,
-                                                        //     profilo: "USER",
-                                                        //     societa: parsedData[key].pInfo.dipendente == 1 ? parsedData[key].pInfo.societa : '',
-                                                        //     userid: parsedData[key].pInfo.id,
-                                                        //     username: parsedData[key].pInfo.username,
-                                                        //     telefono: parsedData[key].pInfo.telefono,
-                                                        //     cv_compilato: "SI"
-                                                        // };
-                                                        // self.impiegati.push(newImpiegato);
-                                                        // self.impiegati.sort((a, b) => (a.cognome > b.cognome) ? 1 : -1);
                                                     }
             
                                                     var sum = result.data.written + result.data.skipped + result.data.failed;
@@ -481,11 +461,15 @@ angular.module('tableImpiegati')
                                                             hideAfter: 5000,
                                                             loaderBg: 'green'
                                                         });
+                                                        setTimeout (function () {
+                                                            window.location.reload();
+                                                        }, 5000);
                                                     } else {
                                                         // console.log('Informazioni:', result.data);
                                                     }
                                                 }
                                                 self.isLoading = false; // Fine caricamento
+                                       
                                             }).catch(function (error) {
                                                 toastErr('Errore durante l\'importazione: ' + error.message);
                                                 self.isLoading = false; // Fine caricamento
@@ -494,6 +478,7 @@ angular.module('tableImpiegati')
                                             throw new Error('Il testo estratto non è un JSON valido.');
                                         }
                                     } catch (error) {
+                                        console.log('Errore durante la conversione del testo in JSON:', error.message);
                                         toastErr('Errore durante la conversione del testo in JSON: ' + error.message);
                                         self.isLoading = false; // Fine caricamento
                                     }
@@ -600,6 +585,7 @@ angular.module('tableImpiegati')
             },
                                 
             processCvWithGoogle: function (extractedText) {
+
                 var apiKey = 'AIzaSyDLMgsqS89Rem-KgA2vI94JI0-f4ghg9Ic'; // Linear System
 
                 var url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=${apiKey}`;
@@ -619,7 +605,7 @@ angular.module('tableImpiegati')
                     - Per campi numerici non forniti campi "ral" e "valutazione" usa null
                     - Per campo "carta_intestata" usa sempre "logo.jpg"
                     - Per campo "giudizio" usa sempre ""
-                    - Per campo "descrizione" assicurati di inserire sempre il testo corrispondente all'esperienza relativa. 
+                    - Per campo "descrizione" assicurati di inserire sempre il testo corrispondente all'esperienza relativa, se sono presenti dei - crea degli elenchi. 
                     2. **Foto** e **Logo**: Sempre "default.jpg".
                     3. **Mansione**: Accetta solo il primo valore es. "Junior Frontend Developer", ignora tutto ciò che segue.
                     4. **Lettere Accentuate**: Usa caratteri non accentati, eccetto per il verbo "è".
@@ -630,9 +616,16 @@ angular.module('tableImpiegati')
                     9. **Date**:
                     - Se mancano date, inserisci valori coerenti (precedenti o successivi, in base al contesto).
                     - Per "hardware" e "software", usa sempre data_compilazione: "2025-01-01".
-                    10. **Lingue**: Trasforma livelli linguistici (es. "madrelingua" in "C2"). Per lingue senza specifiche, usa C2 per ascoltato, parlato e scritto. Escludi "Italiano".
-                    11. **Tag**: Inserisci sempre un massimo 10 tag, ciascuno rappresentato da una parola chiave (es. "Python", "Java").
-                    12. **Commenti**: Non inserire commenti e restituiscimi solo l'oggetto strutturato con tutti i dati [] ed evita di scrivere all'inizio i backticks con json e alla fine i backticks
+                    10. **Lingue**:
+                    **IMPORTANTISSIMO**:
+                    - NON INSERIRE come lingua "Italiano", "Albanese", "Persiano"
+                    - Lingue disponibili:
+                    Arabo, Bulgaro, Ceco, Cinese, Danese, Finlandese, Francese, Giapponese, Greco, Inglese, Norvegese, Olandese, Polacco, Portoghese, Rumeno, Russo, Slovacco, Spagnolo, Svedese, Tedesco, Turco.
+                    - Se NON VIENE SPECIFICATA UNA LINGUA, INSERISCI Inglese A1 per ascoltato, parlato e scritto.
+                    - Trasforma livelli (es. "madrelingua" in "C2").
+                    - Se non viene specificato il livello, usa B1 per ascoltato, parlato e scritto.
+                    11. **Tag**: Inserisci sempre un massimo 10 tag, ciascuno rappresentato da una parola chiave (es. "Python", "Java"). CONTROLLA ATTENTAMENTE anche sotto sezioni "skills"
+                    12. **Output**: Restituisci solo l'oggetto strutturato, senza commenti o codice JSON delimitato da backticks 
                     ### Struttura dell'Oggetto
                     Restituisci i dati nella seguente struttura:
 
@@ -727,9 +720,8 @@ angular.module('tableImpiegati')
                         }
                     ]
                 `;
-
+               
                 
-
                 var requestBody = {
                     contents: [{
                         parts: [

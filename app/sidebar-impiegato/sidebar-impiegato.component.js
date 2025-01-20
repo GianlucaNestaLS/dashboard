@@ -13,6 +13,10 @@ angular.module('sidebarImpiegato')
                 $rootScope.$broadcast('salva');
             }
 
+            self.creaSummary = function(){
+                $location.path('/summary');
+            }
+
             self.creaCV = function(){
                 $location.path('/preview');
             }

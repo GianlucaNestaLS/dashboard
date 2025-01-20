@@ -1,1 +1,1 @@
-angular.module("sidebarHome", []);
+angular.module("sidebarHome", ['ui.bootstrap']);

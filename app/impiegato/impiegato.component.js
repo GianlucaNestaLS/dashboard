@@ -53,9 +53,9 @@ angular.module('impiegato')
                 
                         dati.hardware = datiHardware;
 
-                        // if (!dati.hardware.memoria_ram) dati.hardware.memoria_ram = "";
-                        // if (!dati.hardware.tipo_storage) dati.hardware.tipo_storage = "";
-                        // if (!dati.hardware.capacita_storage) dati.hardware.capacita_storage = "";
+                        if (!dati.hardware.memoria_ram) dati.hardware.memoria_ram = "";
+                        if (!dati.hardware.tipo_storage) dati.hardware.tipo_storage = "";
+                        if (!dati.hardware.capacita_storage) dati.hardware.capacita_storage = "";
                         if (dati.hardware.monitor_esterno === undefined || dati.hardware.monitor_esterno === null) {
                             dati.hardware.monitor_esterno = 0;
                         }
@@ -86,23 +86,23 @@ angular.module('impiegato')
 
                         dati.software.data_compilazione = dati.hardware.data_compilazione;
 
-                        // if(!dati.software.sistema_operativo) dati.software.sistema_operativo = "";
-                        // if(!dati.software.office_suite) dati.software.office_suite = "";
-                        // if(!dati.software.browser) dati.software.browser = "";
-                        // if(!dati.software.antivirus) dati.software.antivirus = "";
-                        // if(!dati.software.software_comunicazione) dati.software.software_comunicazione = "";
-                        // if(!dati.software.software_crittografia) dati.software.software_crittografia = "";
+                        if(!dati.software.sistema_operativo) dati.software.sistema_operativo = "";
+                        if(!dati.software.office_suite) dati.software.office_suite = "";
+                        if(!dati.software.browser) dati.software.browser = "";
+                        if(!dati.software.antivirus) dati.software.antivirus = "";
+                        if(!dati.software.software_comunicazione) dati.software.software_comunicazione = "";
+                        if(!dati.software.software_crittografia) dati.software.software_crittografia = "";
 
-                        if (!isHardwareValid(datiHardware)) {
-                            toastErr('Tutti i campi Hardware devono essere compilati!');
-                            return;
-                        }
+                        // if (!isHardwareValid(datiHardware)) {
+                        //     toastErr('Tutti i campi Hardware devono essere compilati!');
+                        //     return;
+                        // }
 
 
-                        if (!isSoftwareValid(datiSoftware)) {
-                            toastErr('Tutti i campi Software devono essere compilati!');
-                            return;
-                        }
+                        // if (!isSoftwareValid(datiSoftware)) {
+                        //     toastErr('Tutti i campi Software devono essere compilati!');
+                        //     return;
+                        // }
 
                         impiegatoOp.salvaDati(dati).then(function (result) {
                             if (result.data.forbidden) {
@@ -204,6 +204,7 @@ angular.module('impiegato')
                 
                     if (typeof datiPagina === 'function') {
                         let updatedDatiPagina = datiPagina();
+                        // console.log('updatedDatiPagina:', updatedDatiPagina);
                         updatedDatiPagina.hardware = { ...datiHardware };
 
                         // Converti a numeri i valori booleani per monitor_esterno, tastiera_mouse_esterni e stampante
@@ -212,7 +213,36 @@ angular.module('impiegato')
                         updatedDatiPagina.hardware.stampante = boolToInt(datiHardware.stampante);
                 
                         // Aggiorna l'oggetto datiPagina()
-                        datiPagina = function() { return updatedDatiPagina };
+                        datiPagina = function() {
+                            // console.log('updatedDatiPagina inside:', updatedDatiPagina);
+                            // Controlla se tutti i campi sono undefined
+                            const allFieldsUndefined = 
+                                updatedDatiPagina.hardware.capacita_storage === undefined &&
+                                updatedDatiPagina.hardware.data_compilazione === undefined &&
+                                updatedDatiPagina.hardware.mac_address === undefined &&
+                                updatedDatiPagina.hardware.marca_modello_notebook === undefined &&
+                                updatedDatiPagina.hardware.memoria_ram === undefined &&
+                                updatedDatiPagina.hardware.nome_dispositivo === undefined &&
+                                updatedDatiPagina.hardware.processore === undefined &&
+                                updatedDatiPagina.hardware.product_key === undefined &&
+                                updatedDatiPagina.hardware.serial_number === undefined &&
+                                updatedDatiPagina.hardware.tipo_storage === undefined;
+                        
+                            // Controlla se i campi monitor_esterno, stampante e tastiera_mouse_esterni sono 0
+                            const allFieldsZero = 
+                                updatedDatiPagina.hardware.monitor_esterno === 0 &&
+                                updatedDatiPagina.hardware.stampante === 0 &&
+                                updatedDatiPagina.hardware.tastiera_mouse_esterni === 0;
+                        
+                            // Se tutti i campi sono undefined, restituisci un array vuoto
+                            if (allFieldsUndefined && allFieldsZero) {
+                                return updatedDatiPagina.hardware = {};
+                            }
+                                               
+                            // Altrimenti, restituisci l'oggetto aggiornato
+                            return updatedDatiPagina;
+                        }
+                        // console.log('datiPagina aggiornati:', datiPagina());
                     }
                 
                     // Funzione per formattare la data come YYYY-MM-DD
@@ -359,9 +389,9 @@ angular.module('impiegato')
                                     dati.hardware = datiHardware;
                 
                                     // Impostare i valori predefiniti per i campi hardware
-                                    // if (!dati.hardware.memoria_ram) dati.hardware.memoria_ram = "";
-                                    // if (!dati.hardware.tipo_storage) dati.hardware.tipo_storage = "";
-                                    // if (!dati.hardware.capacita_storage) dati.hardware.capacita_storage = "";
+                                    if (!dati.hardware.memoria_ram) dati.hardware.memoria_ram = "";
+                                    if (!dati.hardware.tipo_storage) dati.hardware.tipo_storage = "";
+                                    if (!dati.hardware.capacita_storage) dati.hardware.capacita_storage = "";
                                     if (dati.hardware.monitor_esterno === undefined || dati.hardware.monitor_esterno === null) {
                                         dati.hardware.monitor_esterno = 0;
                                     }
@@ -394,23 +424,23 @@ angular.module('impiegato')
                                     dati.software.data_compilazione = dati.hardware.data_compilazione;
                 
                                     // Assicurati che tutti i campi software siano valorizzati correttamente
-                                    // if(!dati.software.sistema_operativo) dati.software.sistema_operativo = "";
-                                    // if(!dati.software.office_suite) dati.software.office_suite = "";
-                                    // if(!dati.software.browser) dati.software.browser = "";
-                                    // if(!dati.software.antivirus) dati.software.antivirus = "";
-                                    // if(!dati.software.software_comunicazione) dati.software.software_comunicazione = "";
-                                    // if(!dati.software.software_crittografia) dati.software.software_crittografia = "";
+                                    if(!dati.software.sistema_operativo) dati.software.sistema_operativo = "";
+                                    if(!dati.software.office_suite) dati.software.office_suite = "";
+                                    if(!dati.software.browser) dati.software.browser = "";
+                                    if(!dati.software.antivirus) dati.software.antivirus = "";
+                                    if(!dati.software.software_comunicazione) dati.software.software_comunicazione = "";
+                                    if(!dati.software.software_crittografia) dati.software.software_crittografia = "";
 
-                                    if (!isHardwareValid(datiHardware)) {
-                                        toastErr('Tutti i campi Hardware devono essere compilati!');
-                                        return;
-                                    }
+                                    // if (!isHardwareValid(datiHardware)) {
+                                    //     toastErr('Tutti i campi Hardware devono essere compilati!');
+                                    //     return;
+                                    // }
             
             
-                                    if (!isSoftwareValid(datiSoftware)) {
-                                        toastErr('Tutti i campi Software devono essere compilati!');
-                                        return;
-                                    }
+                                    // if (!isSoftwareValid(datiSoftware)) {
+                                    //     toastErr('Tutti i campi Software devono essere compilati!');
+                                    //     return;
+                                    // }
                 
                                     // Salva i dati con il metodo impiegatoOp
                                     impiegatoOp.salvaDati(dati).then(function (result) {
