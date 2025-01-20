@@ -236,7 +236,7 @@ angular.module('impiegato')
                         
                             // Se tutti i campi sono undefined, restituisci un array vuoto
                             if (allFieldsUndefined && allFieldsZero) {
-                                return updatedDatiPagina.hardware = {};
+                                return updatedDatiPagina.hardware = [];
                             }
                                                
                             // Altrimenti, restituisci l'oggetto aggiornato
