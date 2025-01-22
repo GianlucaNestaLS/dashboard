@@ -1002,6 +1002,7 @@ md-chips md-chip, md-chips.md-default-theme md-chip {
     height: 100%;
     background-color: #0073aa;
     overflow-y: auto;
+    z-index: 10000;
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
     -webkit-padding-start: 0;

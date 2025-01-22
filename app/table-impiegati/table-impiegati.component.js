@@ -614,7 +614,7 @@ angular.module('tableImpiegati')
                     7. **Competenze Professionali**: Elenca massimo 10 competenze, ciascuna rappresentata da una parola chiave (es. "Python", "Java").
                     8. **Telefono**: Escludi il prefisso internazionale, mantieni solo il numero (es. "3331234567").
                     9. **Date**:
-                    - Se mancano date, inserisci valori coerenti (precedenti o successivi, in base al contesto).
+                    - Se mancano date, inserisci valori coerenti (precedenti o successivi, in base al contesto), inserisci solo l'anno e non il mese.
                     - Per "hardware" e "software", usa sempre data_compilazione: "2025-01-01".
                     10. **Lingue**:
                     **IMPORTANTISSIMO**:

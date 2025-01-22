@@ -214,11 +214,10 @@ angular.module('impiegato')
                 
                         // Aggiorna l'oggetto datiPagina()
                         datiPagina = function() {
-                            // console.log('updatedDatiPagina inside:', updatedDatiPagina);
                             // Controlla se tutti i campi sono undefined
                             const allFieldsUndefined = 
                                 updatedDatiPagina.hardware.capacita_storage === undefined &&
-                                updatedDatiPagina.hardware.data_compilazione === undefined &&
+                                (updatedDatiPagina.hardware.data_compilazione === undefined || updatedDatiPagina.hardware.data_compilazione === 'NaN-NaN-NaN') &&
                                 updatedDatiPagina.hardware.mac_address === undefined &&
                                 updatedDatiPagina.hardware.marca_modello_notebook === undefined &&
                                 updatedDatiPagina.hardware.memoria_ram === undefined &&
@@ -237,11 +236,14 @@ angular.module('impiegato')
                             // Se tutti i campi sono undefined, restituisci un array vuoto
                             if (allFieldsUndefined && allFieldsZero) {
                                 return updatedDatiPagina.hardware = [];
-                            }
+                            } 
                                                
                             // Altrimenti, restituisci l'oggetto aggiornato
+                            // console.log('ciao')
                             return updatedDatiPagina;
                         }
+
+                        datiPagina();
                         // console.log('datiPagina aggiornati:', datiPagina());
                     }
                 
